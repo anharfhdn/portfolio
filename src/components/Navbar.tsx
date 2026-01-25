@@ -19,7 +19,12 @@ export default function Navbar() {
     const { connect, connectors, isPending } = useConnect()
     const { disconnect } = useDisconnect()
 
-    useEffect(() => setMounted(true), []);
+    useEffect(() => {
+        const handle = requestAnimationFrame(() => {
+            setMounted(true);
+        });
+        return () => cancelAnimationFrame(handle);
+    }, []);
 
     if (!mounted) return null;
 
@@ -62,7 +67,7 @@ export default function Navbar() {
                                         e.preventDefault();
                                         toast.info(`${link.name} Coming Soon`, {
                                             description: "This system registry is currently encrypted or under maintenance.",
-                                            icon: <Lock size={14} className="text-emerald-500" />,
+                                            icon: (<Lock size={14} className="text-emerald-500" />) as React.ReactNode,
                                         });
                                     }
                                 }}
@@ -159,27 +164,29 @@ export default function Navbar() {
             </div>
 
             <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-background border-b border-border"
-                    >
-                        <div className="px-4 pt-2 pb-6 space-y-1">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className="block px-3 py-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                <>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden bg-background border-b border-border"
+                        >
+                            <div className="px-4 pt-2 pb-6 space-y-1">
+                                {navLinks.map((link) => (
+                                    <Link
+                                        key={link.name}
+                                        href={link.href}
+                                        onClick={() => setIsOpen(false)}
+                                        className="block px-3 py-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                                    >
+                                        {link.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </>
             </AnimatePresence>
         </nav>
     );
