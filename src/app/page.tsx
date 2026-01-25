@@ -1,4 +1,4 @@
-"use client"; // Add this if not already there
+"use client";
 
 import ClientProviders from "@/components/ClientProviders";
 import Navbar from "@/components/Navbar";
