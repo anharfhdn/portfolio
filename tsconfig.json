@@ -23,9 +23,9 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/sections/*": ["./src/components/sections/*"]
     }
   },
   "include": [
