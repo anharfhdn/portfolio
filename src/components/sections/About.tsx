@@ -1,31 +1,50 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Cpu, ShieldCheck, Database, Code2, Terminal, Globe } from "lucide-react";
+import { Cpu, ShieldCheck, Database, Globe } from "lucide-react";
 
 export default function About() {
     const coreStack = [
+
         {
-            name: "Industrial & IoT",
-            icon: <Cpu size={20} />,
-            description: "Production automation and data-driven backend systems."
+            name: "Web3 & Blockchain",
+            icon: <ShieldCheck size={20} />,
+            description: "Secure smart contracts, gas optimization, and EVM-compatible protocols."
         },
         {
             name: "Backend Architecture",
             icon: <Database size={20} />,
-            description: "Scalable schemas and high-performance APIs for B2B."
+            description: "Scalable schemas, system integration, and high-performance APIs for B2B."
         },
         {
-            name: "Web3 & Blockchain",
-            icon: <ShieldCheck size={20} />,
-            description: "Secure smart contracts and EVM-compatible protocols."
+            name: "Frontend & Mobile",
+            icon: <Globe size={20} />,
+            description: "Modern web applications and mobile interfaces with Vue, Next.js, and Kotlin."
         },
+        {
+            name: "Industrial & IoT",
+            icon: <Cpu size={20} />,
+            description: "Production automation and hardware-to-cloud integration using PLC and ESP32."
+        }
     ];
 
     const technicalSkills = [
-        { category: "Languages", items: "TypeScript, JavaScript, Python, Go, Solidity" },
-        { category: "Frameworks", items: "React, Next.js, Node.js, Express, Hardhat" },
-        { category: "Infrastructure", items: "PostgreSQL, Prisma, Supabase, Docker, MQTT" },
+        {
+            category: "Blockchain & Web3",
+            items: "Solidity, EVM, Smart Contracts, Foundry, DeFi, NFT, Gas Optimization, IPFS"
+        },
+        {
+            category: "Backend (BE)",
+            items: "Go, PHP, JavaScript, Kotlin, PostgreSQL, MySQL, MSSQL, CodeIgniter"
+        },
+        {
+            category: "Frontend (FE) & Mobile",
+            items: "JavaScript, Next.js, Vue.js, Kotlin, JQuery, Web Applications"
+        },
+        {
+            category: "Systems & IoT",
+            items: "C, C++, Arduino C++, ESP32, ESP8266, Programmable Logic Controller, Git, Linux, Postman"
+        },
     ];
 
     return (
@@ -83,7 +102,6 @@ export default function About() {
                     </motion.div>
 
                     <div className="space-y-4">
-
                         {coreStack.map((skill, index) => (
                             <motion.div
                                 key={skill.name}
@@ -91,14 +109,23 @@ export default function About() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="group p-6 rounded-2xl bg-secondary/20 border border-border hover:border-emerald-500/30 transition-all flex gap-5 items-start"
+                                className="group p-6 rounded-2xl bg-gradient-to-br from-secondary/20 to-transparent border border-border hover:border-emerald-500/40 hover:bg-secondary/30 transition-all flex gap-5 items-start relative overflow-hidden"
                             >
-                                <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12 group-hover:bg-emerald-500/10 transition-colors" />
+
+                                <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 z-10">
                                     {skill.icon}
                                 </div>
-                                <div>
-                                    <h3 className="text-lg font-bold mb-1">{skill.name}</h3>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">{skill.description}</p>
+
+                                <div className="z-10">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="text-lg font-bold">{skill.name}</h3>
+                                        <span className="h-px w-8 bg-emerald-500/30 hidden group-hover:block animate-in slide-in-from-left-2" />
+                                    </div>
+
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        {skill.description}
+                                    </p>
                                 </div>
                             </motion.div>
                         ))}

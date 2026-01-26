@@ -60,7 +60,7 @@ export default function Projects() {
             title: "Wireless Button Control",
             client: "PT. Mitsubishi Krama Yudha Motors & Manufacturing",
             description: "Developing a custom wireless button with ESP32, integrated into existing systems to enhance usability and improve operational workflow.",
-            image: "/projects/panel-button.png",
+            image: "/projects/mkm-button.png",
             tags: ["C++", "Arduino", "MQTT"],
             github: "#",
         },
@@ -76,7 +76,7 @@ export default function Projects() {
             title: "Process Performance",
             client: "PT. Yasulor Indonesia (L'Oreal Indonesia Plant)",
             description: "Enhanced Process Performance Indicator System.",
-            image: "/projects/cosmetics.png",
+            image: "/projects/tbc.png",
             tags: ["PHP", "Code Igniter", "Javascript", "MsSQL"],
             github: "#",
         },
@@ -84,7 +84,7 @@ export default function Projects() {
             title: "Waste Management System",
             client: "PT. Yasulor Indonesia (L'Oreal Indonesia Plant)",
             description: "Developing Waste Management System.",
-            image: "/projects/waste.png",
+            image: "/projects/tbc.png",
             tags: ["Go", "Javascript", "Vue.js", "MsSQL"],
             github: "#",
         },
@@ -195,7 +195,7 @@ export default function Projects() {
                                     {project.title}
                                 </h3>
                                 <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-4">
-                                    Client: <span className="text-foreground font-bold">{project.client}</span>
+                                    For: <span className="text-foreground font-bold">{project.client}</span>
                                 </p>
                                 <p className="text-sm text-muted-foreground line-clamp-3 mb-8 flex-1 leading-relaxed">
                                     {project.description}

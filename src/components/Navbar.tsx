@@ -40,21 +40,33 @@ export default function Navbar() {
         <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
-                    <Link href="/" className="flex items-center h-12 w-60 relative shrink-0">
-                        <Image
-                            src="/logo-dark.png"
-                            alt="Anhar Fahrudin"
-                            fill
-                            className="hidden dark:block object-contain object-left"
-                            priority
-                        />
-                        <Image
-                            src="/logo-light.png"
-                            alt="Anhar Fahrudin"
-                            fill
-                            className="block dark:hidden object-contain object-left"
-                            priority
-                        />
+                    <Link href="/" className="flex items-center gap-3 shrink-0 group">
+                        <div className="relative h-10 w-10 overflow-hidden border-emerald-500/20 bg-emerald-500/5 p-1">
+                            <Image
+                                src="/favicon512.png"
+                                alt="Logo Icon"
+                                width={40}
+                                height={40}
+                                className="object-contain group-hover:scale-110 transition-transform duration-300"
+                            />
+                        </div>
+
+                        <div className="h-12 w-48 relative">
+                            <Image
+                                src="/logo-dark.png"
+                                alt="Anhar Fahrudin"
+                                fill
+                                className="hidden dark:block object-contain object-left"
+                                priority
+                            />
+                            <Image
+                                src="/logo-light.png"
+                                alt="Anhar Fahrudin"
+                                fill
+                                className="block dark:hidden object-contain object-left"
+                                priority
+                            />
+                        </div>
                     </Link>
 
                     <div className="hidden md:flex items-center gap-8">
