@@ -54,9 +54,6 @@ export default function Hero() {
                 </motion.div>
             </div>
 
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-                <div className="w-1 h-12 rounded-full bg-border" />
-            </div>
         </section>
     );
 }

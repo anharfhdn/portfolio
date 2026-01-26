@@ -8,8 +8,11 @@ const instrumentSans = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
-    title: "Portfolio | Next.js",
-    description: "Modern portfolio with blog feature",
+    title: "Anhar F | Full-Stack | Web3",
+    description: "Engineering robust software at the intersection of Industrial Automation & Decentralized Protocols. 3+ years building reliable, scalable Web3 systems.",
+    icons: {
+        icon: '/favicon.png',
+    },
 };
 
 export default function RootLayout({

@@ -37,7 +37,7 @@ export default function Footer() {
                         <a href="https://www.linkedin.com/in/anhar-fahrudin/" className="text-muted-foreground hover:text-foreground transition-colors">
                             <Linkedin size={20} />
                         </a>
-                        <a href="anharfahrudin21@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                        <a href="mailto:anharfahrudin21@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors">
                             <Mail size={20} />
                         </a>
                     </div>
