@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
+import ClientProviders from "@/components/ClientProviders";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -23,7 +24,9 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
         <body className={`${instrumentSans.variable} font-sans antialiased`}>
-        {children}
+        <ClientProviders>
+            {children}
+        </ClientProviders>
         </body>
         </html>
     );

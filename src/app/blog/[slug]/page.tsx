@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 
 export default async function BlogPostPage({
@@ -40,15 +41,21 @@ export default async function BlogPostPage({
                                 {post.title}
                             </h1>
 
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground border-y border-border py-6">
-                                <div className="flex items-center gap-2">
-                                    <User size={16} /> {post.author}
+                            <div className="flex flex-wrap items-center justify-between gap-6 text-sm text-muted-foreground border-y border-border py-6">
+                                <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-2">
+                                        <User size={16} /> {post.author}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Calendar size={16} /> {post.date}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Clock size={16} /> {post.readTime}
+                                    </div>
                                 </div>
+
                                 <div className="flex items-center gap-2">
-                                    <Calendar size={16} /> {post.date}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock size={16} /> {post.readTime}
+                                    <ShareButton label={post.title} />
                                 </div>
                             </div>
                         </div>
