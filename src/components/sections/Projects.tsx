@@ -140,9 +140,9 @@ export default function Projects() {
                                 Projects
                             </span>
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+                        <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
                             SELECTED <br />
-                            <span className="text-muted-foreground italic font-light">PROJECTS_</span>
+                            <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">PROJECTS</span>
                         </h2>
                     </div>
 

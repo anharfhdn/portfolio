@@ -32,16 +32,17 @@ export default function BlogPreview() {
                         </span>
                     </motion.div>
 
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.1 }}
-                            className="text-4xl md:text-5xl font-bold tracking-tight"
-                        >
-                            Latest Articles
-                        </motion.h2>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">                        
+                        <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
+                            LATEST <br />
+                            <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">BLOG</span>
+                        </h2>
+
+                        <div className="hidden lg:flex flex-1 mx-12 mb-4 self-end">
+                            <div className="relative h-[1px] w-full bg-emerald-500/10">
+                                <div className="absolute top-0 left-0 h-full w-2/3 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent animate-pulse" />
+                            </div>
+                        </div>
 
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}

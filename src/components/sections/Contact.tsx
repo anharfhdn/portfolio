@@ -21,9 +21,9 @@ export default function Contact() {
                                 Contact
                             </span>
                         </div>
-                        <h2 className="text-5xl font-black tracking-tighter mb-6">
+                        <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
                             LET'S BUILD <br />
-                            <span className="text-muted-foreground italic font-light">SOMETHING NEW.</span>
+                            <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">SOMETHING NEW.</span>
                         </h2>
                         <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                             Always looking for challenges in <strong>Industrial IoT architecture</strong> or

@@ -66,9 +66,9 @@ export default function About() {
                                 About
                             </span>
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-8">
-                            BRIDGING <span className="text-emerald-500 italic font-light">SYSTEMS</span> <br />
-                            WITH CODE
+                        <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
+                            BRIDGING SYSTEMS <br />
+                            <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">WITH CODE</span>
                         </h2>
 
                         <div className="space-y-4 text-lg text-muted-foreground leading-relaxed mb-10">

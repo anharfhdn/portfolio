@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import {Moon, Sun, Menu, X, Wallet, Lock} from "lucide-react";
+import {Moon, Sun, Menu, X, Wallet} from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
@@ -32,7 +32,8 @@ export default function Navbar() {
         { name: "Home", href: "/" },
         { name: "About", href: "/#about" },
         { name: "Projects", href: "/#projects" },
-        { name: "Blog", href: "/blog" },
+        { name: "Blog", href: "/#blog" },
+        { name: "Philosophy", href: "/#philosophy" },
         { name: "Contact", href: "/#contact" },
     ];
 
@@ -74,15 +75,6 @@ export default function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                onClick={(e) => {
-                                    if (link.href === "/blog") {
-                                        e.preventDefault();
-                                        toast.info(`${link.name} Coming Soon`, {
-                                            description: "This system registry is currently encrypted or under maintenance.",
-                                            icon: (<Lock size={14} className="text-emerald-500" />) as React.ReactNode,
-                                        });
-                                    }
-                                }}
                                 className="text-sm font-medium text-muted-foreground hover:text-emerald-500 transition-all flex items-center gap-1 group"
                             >
                                 {link.name}
