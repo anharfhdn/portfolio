@@ -1,0 +1,228 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { marked } from "marked";
+import {
+  Eye,
+  Edit3,
+  Code,
+  Save,
+  Copy,
+  Download,
+  FileText,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
+
+interface MarkdownEditorProps {
+  initialContent?: string;
+  onSave?: (content: string) => void | Promise<void>;
+  readOnly?: boolean;
+}
+
+export default function MarkdownEditor({
+  initialContent = "",
+  onSave,
+  readOnly = false,
+}: MarkdownEditorProps) {
+  const [content, setContent] = useState(initialContent);
+  const [mode, setMode] = useState<"edit" | "preview" | "split">("split");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+    });
+  }, []);
+
+  const renderMarkdown = (markdown: string): string => {
+    try {
+      return marked.parse(markdown, { async: false }) as string;
+    } catch (error) {
+      return "Error rendering markdown";
+    }
+  };
+
+  const handleSave = () => {
+    if (onSave) {
+      onSave(content);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (typeof content === "string") {
+      await navigator.clipboard.writeText(content);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([content], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `blog-post-${Date.now()}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div
+      className={`relative bg-gradient-to-br from-stone-50 via-amber-50/30 to-green-50/20 dark:from-zinc-950 dark:via-stone-950 dark:to-neutral-950 rounded-2xl border-2 border-stone-200/60 dark:border-stone-800/60 shadow-2xl overflow-hidden transition-all duration-300 ${
+        isFullscreen ? "fixed inset-0 z-50 rounded-none" : ""
+      }`}
+    >
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-green-500 to-red-500" />
+
+      <div className="relative bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl border-b border-stone-200/60 dark:border-stone-800/60">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 rounded-lg p-1">
+            <button
+              onClick={() => setMode("edit")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                mode === "edit"
+                  ? "bg-white dark:bg-stone-700 text-green-600 dark:text-green-400 shadow-sm"
+                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+              }`}
+              disabled={readOnly}
+            >
+              <Edit3 size={16} />
+              Edit
+            </button>
+            <button
+              onClick={() => setMode("split")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                mode === "split"
+                  ? "bg-white dark:bg-stone-700 text-green-600 dark:text-green-400 shadow-sm"
+                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+              }`}
+            >
+              <Code size={16} />
+              Split
+            </button>
+            <button
+              onClick={() => setMode("preview")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                mode === "preview"
+                  ? "bg-white dark:bg-stone-700 text-green-600 dark:text-green-400 shadow-sm"
+                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+              }`}
+            >
+              <Eye size={16} />
+              Preview
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-all duration-200"
+              title="Copy markdown"
+            >
+              {copied ? (
+                <>
+                  <FileText size={16} className="text-green-600" />
+                  <span className="text-green-600">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={16} />
+                  Copy
+                </>
+              )}
+            </button>
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-all duration-200"
+              title="Download markdown"
+            >
+              <Download size={16} />
+              Download
+            </button>
+            {onSave && !readOnly && (
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-green-500 text-white hover:from-green-600 hover:to-red-600 shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <Save size={16} />
+                Save
+              </button>
+            )}
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-all duration-200"
+              title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative">
+        <div
+          className={`grid ${
+            mode === "split" ? "grid-cols-2" : "grid-cols-1"
+          } ${isFullscreen ? "h-[calc(100vh-73px)]" : "h-[600px]"}`}
+        >
+          {(mode === "edit" || mode === "split") && (
+            <div className="relative border-r border-stone-200/60 dark:border-stone-800/60 bg-white dark:bg-stone-950">
+              <div className="absolute top-4 left-6 text-xs font-bold tracking-widest uppercase text-stone-400 dark:text-stone-600">
+                Markdown
+              </div>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                readOnly={readOnly}
+                className="w-full h-full pt-12 px-6 pb-6 bg-transparent text-stone-800 dark:text-stone-200 font-mono text-sm leading-relaxed resize-none focus:outline-none"
+                placeholder="# Start writing your blog post here...
+                             ## Introduction
+
+                             Write content in Markdown format.
+
+                             - Lists work great
+                             - Easy formatting
+                             - Beautiful preview
+
+                             **Bold text** and *italic text* are simple."
+                spellCheck={false}
+              />
+            </div>
+          )}
+
+          {(mode === "preview" || mode === "split") && (
+            <div className="relative overflow-y-auto bg-gradient-to-br from-white via-stone-50/50 to-amber-50/30 dark:from-stone-950 dark:via-stone-900 dark:to-neutral-950">
+              <div className="absolute top-4 left-6 text-xs font-bold tracking-widest uppercase text-stone-400 dark:text-stone-600">
+                Preview
+              </div>
+              <div
+                className="pt-12 px-6 pb-12 prose prose-lg prose-stone dark:prose-invert max-w-none
+                  prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-stone-900 dark:prose-headings:text-stone-100
+                  prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed
+                  prose-a:text-green-600 dark:prose-a:text-green-400 prose-a:no-underline prose-a:font-semibold hover:prose-a:underline
+                  prose-strong:text-stone-900 dark:prose-strong:text-stone-100 prose-strong:font-bold
+                  prose-code:text-green-600 dark:prose-code:text-green-400 prose-code:bg-green-50 dark:prose-code:bg-green-950/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+                  prose-pre:bg-stone-900 dark:prose-pre:bg-stone-950 prose-pre:border prose-pre:border-stone-800
+                  prose-blockquote:border-l-4 prose-blockquote:border-green-500 prose-blockquote:text-stone-700 dark:prose-blockquote:text-stone-400
+                  prose-ul:text-stone-700 dark:prose-ul:text-stone-300
+                  prose-ol:text-stone-700 dark:prose-ol:text-stone-300
+                  prose-li:text-stone-700 dark:prose-li:text-stone-300
+                  prose-hr:border-stone-200 dark:prose-hr:border-stone-800"
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdown(content || "*No content to preview*"),
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')] opacity-30" />
+    </div>
+  );
+}

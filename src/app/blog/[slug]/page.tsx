@@ -1,4 +1,7 @@
-import { BLOG_POSTS } from "@/lib/blog-data";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getBlogPostBySlug } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -6,18 +9,50 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
+import { marked } from "marked";
 
-export default async function BlogPostPage({
-                                               params,
-                                           }: {
+export default function BlogPostPage({
+    params,
+}: {
     params: Promise<{ slug: string }>;
 }) {
-    const { slug } = await params;
-    const post = BLOG_POSTS.find((p) => p.slug === slug);
+    const [post, setPost] = useState<any>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        params.then(async ({ slug: paramSlug }) => {
+            const foundPost = await getBlogPostBySlug(paramSlug);
+            setPost(foundPost);
+            setMounted(true);
+        });
+    }, [params]);
+
+    useEffect(() => {
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+        });
+    }, []);
+
+    if (!mounted) {
+        return null;
+    }
 
     if (!post) {
         notFound();
     }
+
+    const renderContent = () => {
+        if (post.markdown) {
+            try {
+                return marked.parse(post.markdown, { async: false }) as string;
+            } catch (error) {
+                console.error('Error rendering markdown:', error);
+                return post.content || '';
+            }
+        }
+        return post.content || '';
+    };
 
     return (
         <div className="min-h-screen bg-background flex flex-col">
@@ -34,9 +69,9 @@ export default async function BlogPostPage({
 
                     <article>
                         <div className="mb-12">
-              <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary rounded-full mb-6">
-                {post.category}
-              </span>
+                            <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary rounded-full mb-6">
+                                {post.category}
+                            </span>
                             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8">
                                 {post.title}
                             </h1>
@@ -71,9 +106,9 @@ export default async function BlogPostPage({
 
                         <div
                             className="prose prose-lg dark:prose-invert max-w-none
-                prose-headings:font-bold prose-headings:tracking-tight
-                prose-p:text-muted-foreground prose-p:leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: post.content }}
+                    prose-headings:font-bold prose-headings:tracking-tight
+                    prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: renderContent() }}
                         />
                     </article>
                 </div>
