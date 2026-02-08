@@ -133,10 +133,12 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
         }
     };
 
-    const handleSavePost = async (markdown: string) => {
+    const handleSavePost = async (markdown: string | undefined) => {
+        const safeMarkdown = markdown ?? "";
+
         const newPost: BlogPost = {
             ...formData,
-            markdown,
+            markdown: safeMarkdown,
             content: "",
             date: new Date().toISOString().split("T")[0],
         };
