@@ -16,7 +16,7 @@ import {
 
 interface MarkdownEditorProps {
   initialContent?: string;
-  onSave?: (content: string) => void | Promise<void>;
+  onSave?: (content: string | undefined) => void | Promise<void>;
   readOnly?: boolean;
 }
 
@@ -201,21 +201,10 @@ export default function MarkdownEditor({
                 Preview
               </div>
               <div
-                className="pt-12 px-6 pb-12 prose prose-lg prose-stone dark:prose-invert max-w-none
-                  prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-stone-900 dark:prose-headings:text-stone-100
-                  prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed
-                  prose-a:text-green-600 dark:prose-a:text-green-400 prose-a:no-underline prose-a:font-semibold hover:prose-a:underline
-                  prose-strong:text-stone-900 dark:prose-strong:text-stone-100 prose-strong:font-bold
-                  prose-code:text-green-600 dark:prose-code:text-green-400 prose-code:bg-green-50 dark:prose-code:bg-green-950/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-                  prose-pre:bg-stone-900 dark:prose-pre:bg-stone-950 prose-pre:border prose-pre:border-stone-800
-                  prose-blockquote:border-l-4 prose-blockquote:border-green-500 prose-blockquote:text-stone-700 dark:prose-blockquote:text-stone-400
-                  prose-ul:text-stone-700 dark:prose-ul:text-stone-300
-                  prose-ol:text-stone-700 dark:prose-ol:text-stone-300
-                  prose-li:text-stone-700 dark:prose-li:text-stone-300
-                  prose-hr:border-stone-200 dark:prose-hr:border-stone-800"
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdown(content || "*No content to preview*"),
-                }}
+                  className="markdown-body prose prose-stone dark:prose-invert max-w-none text-left pt-12 px-6 pb-12"
+                  dangerouslySetInnerHTML={{
+                    __html: renderMarkdown(content || "*No content to preview*"),
+                  }}
               />
             </div>
           )}

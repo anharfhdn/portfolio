@@ -10,6 +10,8 @@ import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 import { marked } from "marked";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
 export default function BlogPostPage({
     params,
@@ -43,15 +45,26 @@ export default function BlogPostPage({
     }
 
     const renderContent = () => {
-        if (post.markdown) {
+        const rawContent = post.markdown || post.content || '';
+
+        let html = marked.parse(rawContent, { async: false }) as string;
+
+        return html.replace(/\$([^$]+)\$/g, (_, equation) => {
             try {
-                return marked.parse(post.markdown, { async: false }) as string;
-            } catch (error) {
-                console.error('Error rendering markdown:', error);
-                return post.content || '';
+                const unescapedEquation = equation
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&');
+
+                return katex.renderToString(unescapedEquation, {
+                    throwOnError: false,
+                    displayMode: false
+                });
+            } catch (err) {
+                console.error("KaTeX error:", err);
+                return equation;
             }
-        }
-        return post.content || '';
+        });
     };
 
     return (
@@ -59,7 +72,7 @@ export default function BlogPostPage({
             <Navbar />
 
             <main className="flex-grow pt-32 pb-24 grid-bg">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     <Link
                         href="/blog"
                         className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-12"
@@ -69,10 +82,10 @@ export default function BlogPostPage({
 
                     <article>
                         <div className="mb-12">
-                            <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary rounded-full mb-6">
-                                {post.category}
-                            </span>
-                            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-8">
+                <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-primary/10 text-primary rounded-full mb-6">
+                    {post.category}
+                </span>
+                            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
                                 {post.title}
                             </h1>
 
@@ -88,14 +101,11 @@ export default function BlogPostPage({
                                         <Clock size={16} /> {post.readTime}
                                     </div>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                    <ShareButton label={post.title} />
-                                </div>
+                                <ShareButton label={post.title} />
                             </div>
                         </div>
 
-                        <div className="relative aspect-[21/9] rounded-3xl overflow-hidden mb-12 border border-border">
+                        <div className="relative aspect-[21/9] rounded-3xl overflow-hidden mb-12 border border-border shadow-xl">
                             <Image
                                 src={post.image}
                                 alt={post.title}
@@ -105,9 +115,9 @@ export default function BlogPostPage({
                         </div>
 
                         <div
-                            className="prose prose-lg dark:prose-invert max-w-none
-                    prose-headings:font-bold prose-headings:tracking-tight
-                    prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed"
+                            className="prose prose-lg md:prose-xl dark:prose-invert max-w-none
+                prose-headings:font-bold prose-headings:tracking-tight
+                prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed"
                             dangerouslySetInnerHTML={{ __html: renderContent() }}
                         />
                     </article>

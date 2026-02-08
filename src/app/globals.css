@@ -135,3 +135,31 @@
             linear-gradient(to bottom, oklch(1 0 0 / 0.05) 1px, transparent 1px);
   }
 }
+
+.prose {
+  color: #374151;
+  max-width: none !important;
+}
+
+.prose h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem; }
+.prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; }
+
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose li {
+  display: list-item !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.prose p {
+  margin-bottom: 1.25rem !important;
+  line-height: 1.75 !important;
+}
+
+.dark .prose { color: #d1d5db; }
+.dark .prose h1, .dark .prose h2 { color: #f3f4f6; }
