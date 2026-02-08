@@ -28,7 +28,7 @@ export default function Hero() {
                     </h1>
                     <p className="max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed">
                         <strong>Full-stack software engineer</strong> with a backend focus and <strong>3+ years</strong> of experience building production-grade <strong>industrial automation, IoT, and data-driven systems</strong>. <br /><br />
-                        Building on an intensive <strong>Blockchain Developer</strong> bootcamp foundation, currently deep-diving into the <strong>Web3 ecosystem</strong>—advancing expertise in <strong>Solidity, EVM, Smart Contracts</strong>, and <strong>DeFi protocols</strong>.
+                        Building on an intensive <strong>Blockchain Developer</strong> bootcamp foundation, currently deep-diving into the <strong>Web3 ecosystem</strong>—advancing expertise in <strong>Solidity, EVM, Rust, Smart Contracts</strong>, and <strong>DeFi protocols</strong>.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

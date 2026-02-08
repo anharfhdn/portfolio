@@ -11,7 +11,7 @@ export default function Footer() {
                         <Link href="/" className="flex items-center gap-3 shrink-0 group">
                             <div className="relative h-10 w-10 overflow-hidden border-emerald-500/20 bg-emerald-500/5 p-1">
                                 <Image
-                                    src="/favicon512.png"
+                                    src="/favicon.png"
                                     alt="Logo Icon"
                                     width={40}
                                     height={40}

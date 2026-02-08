@@ -6,24 +6,24 @@ import Image from "next/image";
 export default function Philosophy() {
     const philosophyPoints = [
         {
-            title: "Everything in One",
-            desc: "My initials (A and F) come together to show that all my different skills and experiences work as one team."
+            "title": "Everything in One, Guided by Light",
+            "desc": "My initials (A and F) are formed by the falling star - a symbol of hope and aspiration, like wishes made under the night sky. All my skills and experiences move together with purpose, guided by light. The five smaller stars keep me connected, grateful, and intentional."
         },
         {
-            title: "Always Up",
-            desc: "The arrow is a reminder that I choose to grow every day. For me, the only direction that matters is 'up'."
+            "title": "Always Reaching",
+            "desc": "The upward arrow reminds me that growth is a choice I make every day - my path points toward progress."
         },
         {
-            title: "Stay Focused",
-            desc: "The sharp point means I try to ignore the noise and stay focused on what is truly important."
+            "title": "Stay Focused",
+            "desc": "The sharp point cuts through distractions. It's my commitment to clarity, to pursuing what truly matters."
         },
         {
-            title: "Stronger from Stress",
-            desc: "I see hard times like a bow being pulled back; the pressure is only there to help me launch further."
+            "title": "Stronger from Stress",
+            "desc": "The two letters lean into each other, creating something stronger than either could be alone. When pressure comes, I don't stand isolated - I find strength in connection and unity."
         },
         {
-            title: "Stay Grounded",
-            desc: "The balanced shape keeps me steady. It means I can aim for the sky while staying true to who I am."
+            "title": "Stay Grounded",
+            "desc": "The even sides create equilibrium. This shape reminds me that balance between career and life isn't a luxury - it's essential. When I'm balanced, stress dissolves, and I can see clearly again."
         }
     ];
 
@@ -57,7 +57,7 @@ export default function Philosophy() {
                         <div className="absolute inset-0 bg-emerald-500/5 rounded-3xl -rotate-3 group-hover:rotate-0 transition-transform duration-500" />
                         <div className="relative h-full w-full rounded-3xl overflow-hidden border border-emerald-500/20 shadow-2xl">
                             <Image
-                                src="/favicon512.png"
+                                src="/philosophy.png"
                                 alt="AF Arrow Philosophy"
                                 fill
                                 className="object-cover"

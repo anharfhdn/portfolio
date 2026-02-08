@@ -44,7 +44,7 @@ export default function Navbar() {
                     <Link href="/" className="flex items-center gap-3 shrink-0 group">
                         <div className="relative h-10 w-10 overflow-hidden border-emerald-500/20 bg-emerald-500/5 p-1">
                             <Image
-                                src="/favicon512.png"
+                                src="/favicon.png"
                                 alt="Logo Icon"
                                 width={40}
                                 height={40}
@@ -123,9 +123,9 @@ export default function Navbar() {
 
                         {isConnected ? (
                             <>
-            <span className="text-xs bg-muted/50 px-1 rounded font-mono">
-                {address?.slice(0, 4)}...
-            </span>
+                                <span className="text-xs bg-muted/50 px-1 rounded font-mono">
+                                    {address?.slice(0, 4)}...
+                                </span>
                                 <button
                                     onClick={() => disconnect()}
                                     className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md text-xs h-8 w-8 flex items-center justify-center"
