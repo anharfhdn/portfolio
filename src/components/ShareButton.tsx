@@ -30,7 +30,7 @@ export default function ShareButton({ label }: { label?: string }) {
         <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted/50 hover:bg-muted transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-muted/50 hover:bg-muted transition-colors text-sm"
         >
             {copied ? <Check size={14} /> : <Share2 size={14} />}
             <span>{copied ? "Copied" : "Share"}</span>

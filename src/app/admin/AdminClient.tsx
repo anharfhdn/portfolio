@@ -8,7 +8,7 @@ import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import {getAllBlogPostsLength} from "@/lib/blog";
+import {getAllBlogPostsLengthAdmin} from "@/lib/blog";
 
 export default function AdminClient({adminAddresses = []}: { adminAddresses?: string[] }) {
     const {address, isConnected} = useAccount();
@@ -22,7 +22,7 @@ export default function AdminClient({adminAddresses = []}: { adminAddresses?: st
         if (isAdmin) {
             (async () => {
                 try {
-                    const remote = await getAllBlogPostsLength();
+                    const remote = await getAllBlogPostsLengthAdmin();
                     setPostsLength(remote);
                 } catch (e) {
                     setPostsLength(0);
@@ -36,7 +36,7 @@ export default function AdminClient({adminAddresses = []}: { adminAddresses?: st
         if (isAdmin) {
             (async () => {
                 try {
-                    const remote = await getAllBlogPostsLength();
+                    const remote = await getAllBlogPostsLengthAdmin();
                     setPostsLength(remote);
                 } catch (e) {
                     console.warn('Failed to load posts', e);

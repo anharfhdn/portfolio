@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
     Select,
     SelectContent,
@@ -18,7 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { getAllBlogPosts, saveBlogPost, deleteBlogPost } from "@/lib/blog";
+import { getAllBlogPostsAdmin, saveBlogPost, deleteBlogPost, blogVisibilityPost } from "@/lib/blog";
 
 interface BlogPost {
     slug: string;
@@ -31,6 +32,7 @@ interface BlogPost {
     excerpt: string;
     content: string;
     markdown: string;
+    status?: 'draft' | 'published' | 'archived';
 }
 
 export default function AdminBlogClient({ adminAddresses }: { adminAddresses: string[] }) {
@@ -39,6 +41,10 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
     const [isEditing, setIsEditing] = useState(false);
     const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
     const [isCreating, setIsCreating] = useState(false);
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -64,6 +70,14 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
         "Life"
     ];
 
+    const STATUS_OPTIONS = [
+        { value: 'published', label: 'Publish', icon: '✅' },
+        { value: 'draft', label: 'Move to Draft', icon: '✏️' },
+        { value: 'archived', label: 'Archive', icon: '📁' },
+    ] as const;
+
+    type BlogStatus = 'draft' | 'published' | 'archived';
+
     const isAdmin = isConnected && address
         ? adminAddresses.some(adminAddr => adminAddr.toLowerCase() === address.toLowerCase())
         : false;
@@ -72,7 +86,7 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
         if (isAdmin) {
             (async () => {
                 try {
-                    const remote = await getAllBlogPosts();
+                    const remote = await getAllBlogPostsAdmin();
                     setPosts(remote as any[]);
                 } catch (e) {
                     setPosts([]);
@@ -83,7 +97,7 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
     }, [isAdmin]);
 
     const loadPosts = async () => {
-        const savedPosts = await getAllBlogPosts();
+        const savedPosts = await getAllBlogPostsAdmin();
         setPosts(savedPosts as any[]);
     };
 
@@ -125,11 +139,45 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
         });
     };
 
-    const handleDeletePost = async (slug: string) => {
-        if (confirm("Are you sure you want to delete this post?")) {
-            const ok = await deleteBlogPost(slug);
-            if (!ok) console.warn('Failed to delete post on server');
+    const handleStatusChange = async (post: any, newStatus: 'draft' | 'published' | 'archived') => {
+        const messages = {
+            draft: "Are you sure you want to move this post to draft?",
+            published: "Are you sure you want to publish this post?",
+            archived: "Are you sure you want to archive this post?"
+        };
+
+        if (confirm(messages[newStatus])) {
+            const ok = await blogVisibilityPost(post.slug, newStatus);
+
+            if (!ok) {
+                console.error(`Failed to change post status to ${newStatus}`);
+                alert(`Failed to change post status to ${newStatus}`);
+            } else {
+                await loadPosts();
+            }
+        }
+    };
+
+    const handleDeleteClick = (slug: string) => {
+        setPostToDelete(slug);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!postToDelete) return;
+
+        setIsDeleting(true);
+        try {
+            const ok = await deleteBlogPost(postToDelete);
+            if (!ok) {
+                console.warn('Failed to delete post on server');
+            }
             await loadPosts();
+        } catch (error) {
+            console.error('Error deleting post:', error);
+        } finally {
+            setIsDeleting(false);
+            setPostToDelete(null);
         }
     };
 
@@ -350,6 +398,11 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
         );
     }
 
+    const getPostTitle = () => {
+        const post = posts.find(p => p.slug === postToDelete);
+        return post ? post.title : '';
+    };
+
     return (
         <div className="min-h-screen bg-background flex flex-col">
             <Navbar />
@@ -399,12 +452,12 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
-                        <span className="inline-block px-2 py-1 text-xs font-bold tracking-wider uppercase bg-primary/10 text-primary rounded">
-                          {post.category}
-                        </span>
+                                                <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full">
+                                                    {post.category || 'Uncategorized'}
+                                                </span>
                                                 <span className="text-xs text-muted-foreground">
-                          {post.slug}
-                        </span>
+                                                    {post.slug}
+                                                </span>
                                             </div>
                                             <h3 className="text-xl font-bold mb-2">{post.title}</h3>
                                             <p className="text-sm text-muted-foreground mb-4">
@@ -425,23 +478,52 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
 
                                         <div className="flex gap-2">
                                             <Link href={`/blog/${post.slug}`} target="_blank">
-                                                <Button variant="outline" size="sm" title="Preview post">
+                                                <Button className="h-9 px-2" variant="outline" size="sm" title="Preview post">
                                                     <Eye size={16} />
                                                 </Button>
                                             </Link>
+                                            <Select
+                                                value={post.status || 'draft'}
+                                                onValueChange={(value: BlogStatus) => handleStatusChange(post, value)}
+                                            >
+                                                <SelectTrigger className="h-9 w-[120px]">
+                                                    <div className="flex items-center gap-1">
+                                                        {post.status === 'published' && <span className="text-green-600">✅</span>}
+                                                        {post.status === 'draft' && <span className="text-yellow-600">✏️</span>}
+                                                        {post.status === 'archived' && <span className="text-gray-600">📁</span>}
+                                                        <span className="text-xs capitalize">
+                                                            {post.status || 'draft'}
+                                                        </span>
+                                                    </div>
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {STATUS_OPTIONS.map((option) => {
+                                                        if (option.value === post.status) return null as any;
+                                                        return (
+                                                            <SelectItem key={option.value} value={option.value}>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span>{option.icon}</span>
+                                                                    <span>{option.label}</span>
+                                                                </div>
+                                                            </SelectItem>
+                                                        );
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
                                             <Button
-                                                variant="outline"
+                                                className="h-9 px-2"
                                                 size="sm"
+                                                variant="outline"
                                                 onClick={() => handleEditPost(post)}
                                                 title="Edit post"
                                             >
                                                 <Edit size={16} />
                                             </Button>
                                             <Button
-                                                variant="outline"
+                                                className="h-9 px-2 text-red-600 hover:text-red-700 hover:border-red-600"
                                                 size="sm"
-                                                onClick={() => handleDeletePost(post.slug)}
-                                                className="text-red-600 hover:text-red-700 hover:border-red-600"
+                                                variant="outline"
+                                                onClick={() => handleDeleteClick(post.slug)}
                                                 title="Delete post"
                                             >
                                                 <Trash2 size={16} />
@@ -454,6 +536,18 @@ export default function AdminBlogClient({ adminAddresses }: { adminAddresses: st
                     </div>
                 </div>
             </main>
+
+            <ConfirmationDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                title="Delete Blog Post"
+                description={`Are you sure you want to delete "${getPostTitle()}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                variant="destructive"
+                loading={isDeleting}
+            />
 
             <Footer />
         </div>

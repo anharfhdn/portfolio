@@ -58,7 +58,10 @@ export default function BlogPage() {
                             Blog
                         </h1>
                         <p className="text-lg text-muted-foreground">
-                            Thoughts on life, web development, design, technology, books, etc. {posts.length > 0 && `${posts.length} article${posts.length !== 1 ? 's' : ''} available.`}
+                            Thoughts on life, programming, design, technology, books, etc.
+                        </p>
+                        <p className="text-lg text-muted-foreground">
+                            {posts.length > 0 && `${posts.length} article${posts.length !== 1 ? 's' : ''} available.`}
                         </p>
                     </div>
 

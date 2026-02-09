@@ -12,33 +12,73 @@ export type SupabasePost = {
   readTime?: string;
   category?: string;
   image?: string;
+  status?: 'draft' | 'published' | 'archived';
   created_at?: string;
   updated_at?: string;
 };
 
 export async function getAllBlogPosts(): Promise<SupabasePost[]> {
   try {
-    const { data, error } = await supabase.from('posts').select('*').order('date', { ascending: false });
-    if (error) {
-      console.error('Supabase read error:', error);
+    const res = await fetch('/api/blog', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch posts:', await res.text());
       return [];
     }
-    const normalized = (data ?? []).map((row: any) => ({
+
+    const data = await res.json();
+
+    const normalized = (data.data ?? []).map((row: any) => ({
       ...row,
       readTime: row.read_time ?? row.readTime ?? undefined,
     }));
+
     return normalized as SupabasePost[];
   } catch (err) {
-    console.error('Error getting posts from Supabase:', err);
+    console.error('Error getting posts:', err);
     return [];
   }
 }
 
-export async function getAllBlogPostsLength(): Promise<number> {
+export async function getAllBlogPostsAdmin(showArchived: boolean = false): Promise<SupabasePost[]> {
+  try {
+    const url = `/api/blog?admin=true&archived=${showArchived}`;
+
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Referer': typeof window !== 'undefined' ? window.location.origin + '/admin' : ''
+      },
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch admin posts:', await res.text());
+      return [];
+    }
+
+    const data = await res.json();
+
+    const normalized = (data.data ?? []).map((row: any) => ({
+      ...row,
+      readTime: row.read_time ?? row.readTime ?? undefined,
+    }));
+
+    return normalized as SupabasePost[];
+  } catch (err) {
+    console.error('Error getting admin posts:', err);
+    return [];
+  }
+}
+
+export async function getAllBlogPostsLengthAdmin(): Promise<number> {
   try {
     const { count, error } = await supabase
         .from('posts')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
 
     if (error) {
       console.error('Supabase read error:', error);
@@ -54,7 +94,12 @@ export async function getAllBlogPostsLength(): Promise<number> {
 
 export async function getBlogPostBySlug(slug: string): Promise<SupabasePost | null> {
   try {
-    const { data, error } = await supabase.from('posts').select('*').eq('slug', slug).limit(1).single();
+    const { data, error } = await supabase.from('posts')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .limit(1)
+        .single();
     if (error) {
       console.error('Supabase get by slug error:', error);
       return null;
@@ -109,6 +154,39 @@ export async function deleteBlogPost(slug: string): Promise<boolean> {
     return true;
   } catch (err) {
     console.error('Error deleting post:', err);
+    return false;
+  }
+}
+
+export type BlogStatus = 'draft' | 'published' | 'archived';
+
+export async function blogVisibilityPost(slug: string, status: BlogStatus): Promise<boolean> {
+  try {
+    const actionMap: Record<BlogStatus, string> = {
+      'draft': 'draft',
+      'published': 'publish',
+      'archived': 'archive'
+    };
+
+    const action = actionMap[status] || status;
+
+    const res = await fetch('/api/blog', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action,
+        slug
+      }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`Failed to set blog post to ${status}:`, errorText);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error(`Error setting blog post to ${status}:`, err);
     return false;
   }
 }
