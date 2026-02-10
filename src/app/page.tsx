@@ -11,20 +11,20 @@ import Footer from "@/components/Footer";
 import Philosophy from "@/components/sections/Philosophy";
 
 export default function Home() {
-    return (
-        <ClientProviders>
-            <div className="flex flex-col min-h-screen bg-background">
-                <Navbar />
-                <main className="flex-grow">
-                    <Hero />
-                    <About />
-                    <Projects />
-                    <BlogPreview />
-                    <Philosophy />
-                    <Contact />
-                </main>
-                <Footer />
-            </div>
-        </ClientProviders>
-    );
+  return (
+    <ClientProviders>
+      <div className="flex flex-col min-h-screen bg-background">
+        <Navbar />
+        <main className="flex-grow">
+          <Hero />
+          <About />
+          <Projects />
+          <BlogPreview />
+          <Philosophy />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </ClientProviders>
+  );
 }

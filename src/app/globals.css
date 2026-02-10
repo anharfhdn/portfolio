@@ -124,15 +124,15 @@
 @layer utilities {
   .grid-bg {
     background-image:
-            linear-gradient(to right, oklch(0.5 0 0 / 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, oklch(0.5 0 0 / 0.05) 1px, transparent 1px);
+      linear-gradient(to right, oklch(0.5 0 0 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0.5 0 0 / 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
   .dark .grid-bg {
     background-image:
-            linear-gradient(to right, oklch(1 0 0 / 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, oklch(1 0 0 / 0.05) 1px, transparent 1px);
+      linear-gradient(to right, oklch(1 0 0 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(1 0 0 / 0.05) 1px, transparent 1px);
   }
 }
 
@@ -141,8 +141,17 @@
   max-width: none !important;
 }
 
-.prose h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem; }
-.prose h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; }
+.prose h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
 
 .prose ul {
   list-style-type: disc !important;
@@ -161,5 +170,10 @@
   line-height: 1.75 !important;
 }
 
-.dark .prose { color: #d1d5db; }
-.dark .prose h1, .dark .prose h2 { color: #f3f4f6; }
+.dark .prose {
+  color: #d1d5db;
+}
+.dark .prose h1,
+.dark .prose h2 {
+  color: #f3f4f6;
+}

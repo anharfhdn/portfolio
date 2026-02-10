@@ -201,10 +201,10 @@ export default function MarkdownEditor({
                 Preview
               </div>
               <div
-                  className="markdown-body prose prose-stone dark:prose-invert max-w-none text-left pt-12 px-6 pb-12"
-                  dangerouslySetInnerHTML={{
-                    __html: renderMarkdown(content || "*No content to preview*"),
-                  }}
+                className="markdown-body prose prose-stone dark:prose-invert max-w-none text-left pt-12 px-6 pb-12"
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdown(content || "*No content to preview*"),
+                }}
               />
             </div>
           )}
