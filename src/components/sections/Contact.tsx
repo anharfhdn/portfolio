@@ -82,7 +82,7 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-xl leading-tight">
-                  Industrial IoT & Solidity Architecture
+                  Web3 & Industrial IoT
                 </h3>
               </div>
             </div>

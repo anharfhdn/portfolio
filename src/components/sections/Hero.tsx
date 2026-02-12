@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ResumeButton from "@/components/ui/ResumeButton";
+import { workExperienceDuration } from "@/lib/utils";
 
 export default function Hero() {
   return (
@@ -32,20 +33,17 @@ export default function Hero() {
               ENGINEERING
             </span>
             <br />
-            SCALABLE SYSTEMS
+            REAL-WORLD SYSTEMS
           </h1>
-          <p className="max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed">
-            <strong>Full-stack software engineer</strong> with a backend focus
-            and <strong>3+ years</strong> of experience building
-            production-grade{" "}
-            <strong>industrial automation, IoT, and data-driven systems</strong>
-            . <br />
+          <p className="max-w-4xl mx-auto text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed">
+            <strong>Full-Stack Software Engineer</strong> with <strong>{ workExperienceDuration() } years</strong> of experience building
+            production-grade<br /><strong>industrial automation, IoT, and data-driven</strong> application systems.
             <br />
-            Building on an intensive <strong>Blockchain Developer</strong>{" "}
-            bootcamp foundation, currently deep-diving into the{" "}
-            <strong>Web3 ecosystem</strong>—advancing expertise in{" "}
-            <strong>Solidity, EVM, Rust, Smart Contracts</strong>, and{" "}
-            <strong>DeFi protocols</strong>.
+            <br />
+            Currently advancing the <strong>Web3 ecosystem</strong>—engineering decentralized solutions across<br/>
+            <strong> DeFi, NFTs, and RWA</strong>. Specializing in
+            <strong> asset tokenization</strong> and <strong>Smart Contract architecture</strong> (Solidity, Rust, EVM)
+            to build a more transparent, <strong>decentralized future</strong>.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

@@ -83,6 +83,15 @@ export default function Projects() {
       github: "#",
     },
     {
+      title: "IoT Dashboard",
+      client: "PT. Denso Manufacturing Indonesia",
+      description:
+          "Supported expansion of existing IoT dashboard to additional production line and coordinated requirements gathering and stakeholder communication.",
+      image: "/projects/tbc.png",
+      tags: ["Go", "PHP", "MsSQL"],
+      github: "#",
+    },
+    {
       title: "PLC Data Monitoring & Reporting",
       client: "PT. Bintang Toedjoe",
       description:
@@ -207,7 +216,6 @@ export default function Projects() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105 group-hover:rotate-1"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
               </div>
 
               <div className="p-7 flex flex-col flex-1">

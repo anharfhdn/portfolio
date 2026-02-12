@@ -123,7 +123,6 @@ export default function BlogPreview() {
                         </span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                   </div>
 
                   <div className="flex flex-col flex-grow p-6">
@@ -160,9 +159,6 @@ export default function BlogPreview() {
               <p className="text-muted-foreground mb-4">
                 No blog posts available yet.
               </p>
-              <Link href="/admin/blog">
-                <Button variant="outline">Create First Post</Button>
-              </Link>
             </div>
           )}
         </div>

@@ -61,7 +61,7 @@ export default function BlogPage() {
               Blog
             </h1>
             <p className="text-lg text-muted-foreground">
-              Thoughts on life, programming, design, technology, books, etc.
+              Thoughts on life, programming, work, design, technology, books, etc.
             </p>
             <p className="text-lg text-muted-foreground">
               {posts.length > 0 &&
@@ -191,11 +191,6 @@ export default function BlogPage() {
               <p className="text-lg text-muted-foreground mb-4">
                 No blog posts available yet.
               </p>
-              <Link href="/admin/blog">
-                <button className="text-emerald-500 hover:text-emerald-600 font-medium transition-colors">
-                  Create your first post
-                </button>
-              </Link>
             </div>
           ) : (
             <div className="text-center py-16">
