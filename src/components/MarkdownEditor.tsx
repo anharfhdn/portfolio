@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { marked } from "marked";
+import hljs from "highlight.js";
 import {
   Eye,
   Edit3,
@@ -29,6 +30,7 @@ export default function MarkdownEditor({
   const [mode, setMode] = useState<"edit" | "preview" | "split">("split");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     marked.setOptions({
@@ -37,13 +39,36 @@ export default function MarkdownEditor({
     });
   }, []);
 
+  useEffect(() => {
+    if ((mode === "preview" || mode === "split") && previewRef.current) {
+      const codeBlocks = previewRef.current.querySelectorAll("pre code");
+      codeBlocks.forEach((block) => {
+        block.removeAttribute("data-highlighted");
+        hljs.highlightElement(block as HTMLElement);
+      });
+    }
+  }, [content, mode]);
+
   const renderMarkdown = (markdown: string): string => {
     try {
-      return marked.parse(markdown, { async: false }) as string;
+      return marked.parse(markdown) as string;
     } catch (error) {
       return "Error rendering markdown";
     }
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const previewArea = document.querySelector(".markdown-body");
+      if (previewArea) {
+        previewArea.querySelectorAll("pre code").forEach((block) => {
+          hljs.highlightElement(block as HTMLElement);
+        });
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [content, mode]);
 
   const handleSave = () => {
     if (onSave) {
@@ -180,16 +205,7 @@ export default function MarkdownEditor({
                 onChange={(e) => setContent(e.target.value)}
                 readOnly={readOnly}
                 className="w-full h-full pt-12 px-6 pb-6 bg-transparent text-stone-800 dark:text-stone-200 font-mono text-sm leading-relaxed resize-none focus:outline-none"
-                placeholder="# Start writing your blog post here...
-                             ## Introduction
-
-                             Write content in Markdown format.
-
-                             - Lists work great
-                             - Easy formatting
-                             - Beautiful preview
-
-                             **Bold text** and *italic text* are simple."
+                placeholder="# Start writing your blog post here...\n\n## Introduction\n\nWrite content in Markdown format.\n\n- Lists work great\n- Easy formatting\n- Beautiful preview\n\n**Bold text** and *italic text* are simple."
                 spellCheck={false}
               />
             </div>

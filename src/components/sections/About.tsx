@@ -49,8 +49,7 @@ export default function About() {
     },
     {
       category: "Systems & IoT",
-      items:
-        "C, C++, Arduino C++, ESP32, ESP8266, PLC, Git, Linux, Postman",
+      items: "C, C++, Arduino C++, ESP32, ESP8266, PLC, Git, Linux, Postman",
     },
   ];
 
@@ -90,9 +89,10 @@ export default function About() {
                 systems where reliability and data integrity are non-negotiable.
               </p>
               <p>
-                Leveraging <strong>{ workExperienceDuration() } years</strong> of full-stack experience to
-                build applications that translate complex industrial
-                requirements into elegant, scalable technical solutions.
+                Leveraging <strong>{workExperienceDuration()} years</strong> of
+                full-stack experience to build applications that translate
+                complex industrial requirements into elegant, scalable technical
+                solutions.
               </p>
             </div>
 
@@ -109,7 +109,9 @@ export default function About() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="p-6 rounded-2xl bg-secondary/30 border border-border">
-                <h3 className="text-3xl font-bold mb-1">{ workExperienceDuration() }</h3>
+                <h3 className="text-3xl font-bold mb-1">
+                  {workExperienceDuration()}
+                </h3>
                 <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                   Years Industry Exp.
                 </p>

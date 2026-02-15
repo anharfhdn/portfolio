@@ -36,13 +36,20 @@ export default function Hero() {
             REAL-WORLD SYSTEMS
           </h1>
           <p className="max-w-4xl mx-auto text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed">
-            <strong>Full-Stack Software Engineer</strong> with <strong>{ workExperienceDuration() } years</strong> of experience building
-            production-grade<br /><strong>industrial automation, IoT, and data-driven</strong> application systems.
+            <strong>Full-Stack Software Engineer</strong> with{" "}
+            <strong>{workExperienceDuration()} years</strong> of experience
+            building production-grade
+            <br />
+            <strong>industrial automation, IoT, and data-driven</strong>{" "}
+            application systems.
             <br />
             <br />
-            Currently advancing the <strong>Web3 ecosystem</strong>—engineering decentralized solutions across<br/>
+            Currently advancing the <strong>Web3 ecosystem</strong>—engineering
+            decentralized solutions across
+            <br />
             <strong> DeFi, NFTs, and RWA</strong>. Specializing in
-            <strong> asset tokenization</strong> and <strong>Smart Contract architecture</strong> (Solidity, Rust, EVM)
+            <strong> asset tokenization</strong> and{" "}
+            <strong>Smart Contract architecture</strong> (Solidity, Rust, EVM)
             to build a more transparent, <strong>decentralized future</strong>.
           </p>
 

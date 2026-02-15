@@ -61,7 +61,8 @@ export default function BlogPage() {
               Blog
             </h1>
             <p className="text-lg text-muted-foreground">
-              Thoughts on life, programming, work, design, technology, books, etc.
+              Thoughts on life, programming, work, design, technology, books,
+              etc.
             </p>
             <p className="text-lg text-muted-foreground">
               {posts.length > 0 &&

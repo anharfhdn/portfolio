@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getBlogPostBySlug } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,6 +10,7 @@ import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 import { marked } from "marked";
+import hljs from "highlight.js";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
@@ -20,6 +21,7 @@ export default function BlogPostPage({
 }) {
   const [post, setPost] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     params.then(async ({ slug: paramSlug }) => {
@@ -36,18 +38,58 @@ export default function BlogPostPage({
     });
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
+  useEffect(() => {
+    if (mounted && post && contentRef.current) {
+      const codeBlocks = contentRef.current.querySelectorAll("pre code");
+      codeBlocks.forEach((block) => {
+        block.removeAttribute("data-highlighted");
+        hljs.highlightElement(block as HTMLElement);
+      });
+    }
+  }, [mounted, post]);
 
-  if (!post) {
-    notFound();
-  }
+  useEffect(() => {
+    if (mounted && post && contentRef.current) {
+      const preBlocks = contentRef.current.querySelectorAll("pre");
+
+      preBlocks.forEach((pre) => {
+        const code = pre.querySelector("code");
+        if (!code) return;
+
+        code.removeAttribute("data-highlighted");
+        hljs.highlightElement(code as HTMLElement);
+
+        if (!pre.querySelector(".copy-code-button")) {
+          const button = document.createElement("button");
+          button.className = "copy-code-button";
+          button.setAttribute("aria-label", "Copy code");
+          button.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          `;
+
+          button.onclick = async () => {
+            await navigator.clipboard.writeText(code.innerText);
+            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+            button.classList.add("copied");
+
+            setTimeout(() => {
+              button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+              button.classList.remove("copied");
+            }, 2000);
+          };
+
+          pre.appendChild(button);
+        }
+      });
+    }
+  }, [mounted, post]);
+
+  if (!mounted) return null;
+  if (!post) notFound();
 
   const renderContent = () => {
     const rawContent = post.markdown || post.content || "";
-
-    let html = marked.parse(rawContent, { async: false }) as string;
+    let html = marked.parse(rawContent) as string;
 
     return html.replace(/\$([^$]+)\$/g, (_, equation) => {
       try {
@@ -61,7 +103,6 @@ export default function BlogPostPage({
           displayMode: false,
         });
       } catch (err) {
-        console.error("KaTeX error:", err);
         return equation;
       }
     });
@@ -70,7 +111,6 @@ export default function BlogPostPage({
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-
       <main className="flex-grow pt-32 pb-24 grid-bg">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
@@ -120,6 +160,7 @@ export default function BlogPostPage({
             </div>
 
             <div
+              ref={contentRef}
               className="prose prose-lg md:prose-xl dark:prose-invert max-w-none
                 prose-headings:font-bold prose-headings:tracking-tight
                 prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed"
@@ -128,7 +169,6 @@ export default function BlogPostPage({
           </article>
         </div>
       </main>
-
       <Footer />
     </div>
   );

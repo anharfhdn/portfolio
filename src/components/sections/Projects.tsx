@@ -86,7 +86,7 @@ export default function Projects() {
       title: "IoT Dashboard",
       client: "PT. Denso Manufacturing Indonesia",
       description:
-          "Supported expansion of existing IoT dashboard to additional production line and coordinated requirements gathering and stakeholder communication.",
+        "Supported expansion of existing IoT dashboard to additional production line and coordinated requirements gathering and stakeholder communication.",
       image: "/projects/tbc.png",
       tags: ["Go", "PHP", "MsSQL"],
       github: "#",
