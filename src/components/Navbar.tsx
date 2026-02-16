@@ -6,18 +6,13 @@ import { useTheme } from "next-themes";
 import { Moon, Sun, Menu, X, Wallet } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  const { address, isConnected } = useAccount();
-  const { connect, connectors, isPending } = useConnect();
-  const { disconnect } = useDisconnect();
 
   useEffect(() => {
     const handle = requestAnimationFrame(() => {
@@ -51,7 +46,6 @@ export default function Navbar() {
                 className="object-contain group-hover:scale-110 transition-transform duration-300"
               />
             </div>
-
             <div className="h-12 w-48 relative">
               <Image
                 src="/logo-dark.png"
@@ -81,93 +75,120 @@ export default function Navbar() {
                 <span className="w-1 h-3 bg-emerald-500 hidden group-hover:inline-block animate-pulse ml-1" />
               </Link>
             ))}
+
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-full hover:bg-muted transition-colors"
+              className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground"
             >
               {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <div className="flex items-center gap-2">
-              {isConnected ? (
-                <>
-                  <span className="text-xs bg-muted/50 px-2 py-0.5 rounded-full text-muted-foreground font-mono border">
-                    {address?.slice(0, 6)}...{address?.slice(-4)}
-                  </span>
 
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => disconnect()}
+            <ConnectButton.Custom>
+              {({
+                account,
+                chain,
+                openAccountModal,
+                openChainModal,
+                openConnectModal,
+                mounted: rbMounted,
+              }) => {
+                const ready = rbMounted;
+                const connected = ready && account && chain;
+
+                return (
+                  <div
+                    {...(!ready && {
+                      "aria-hidden": true,
+                      style: {
+                        opacity: 0,
+                        pointerEvents: "none",
+                        userSelect: "none",
+                      },
+                    })}
                   >
-                    <Wallet size={18} />
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => connect({ connector: connectors[0] })}
-                  disabled={isPending}
-                >
-                  <Wallet size={18} />
-                  {isPending ? "Connecting..." : "Connect"}
-                </Button>
-              )}
-            </div>
+                    {(() => {
+                      if (!connected) {
+                        return (
+                          <Button
+                            onClick={openConnectModal}
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-lg shadow-emerald-500/20"
+                          >
+                            <Wallet size={16} />
+                            Connect
+                          </Button>
+                        );
+                      }
+                      if (chain.unsupported) {
+                        return (
+                          <Button
+                            onClick={openChainModal}
+                            variant="destructive"
+                            size="sm"
+                            className="border-2"
+                          >
+                            Wrong Network
+                          </Button>
+                        );
+                      }
+                      return (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            onClick={openChainModal}
+                            variant="outline"
+                            size="sm"
+                            className="px-2 border-emerald-500/40 dark:border-emerald-500/40 hover:border-emerald-500 transition-all"
+                          >
+                            {chain.hasIcon && (
+                              <div className="w-5 h-5">
+                                {chain.iconUrl && (
+                                  <img
+                                    alt={chain.name ?? "Chain icon"}
+                                    src={chain.iconUrl}
+                                    className="w-5 h-5 rounded-full"
+                                  />
+                                )}
+                              </div>
+                            )}
+                          </Button>
+
+                          <Button
+                            onClick={openAccountModal}
+                            variant="outline"
+                            size="sm"
+                            className="font-mono text-xs border-emerald-500/40 dark:border-emerald-500/40 hover:border-emerald-500 transition-all duration-300"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              {account.displayName}
+                            </div>
+                          </Button>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                );
+              }}
+            </ConnectButton.Custom>
           </div>
 
-          <div className="md:hidden flex items-center gap-2 p-1">
+          <div className="md:hidden flex items-center gap-4">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            {isConnected ? (
-              <>
-                <span className="text-xs bg-muted/50 px-1 rounded font-mono">
-                  {address?.slice(0, 4)}...
-                </span>
-                <button
-                  onClick={() => disconnect()}
-                  className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md text-xs h-8 w-8 flex items-center justify-center"
-                >
-                  <Wallet size={14} />
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  if (
-                    typeof window !== "undefined" &&
-                    window.innerWidth < 768
-                  ) {
-                    toast("Desktop Recommended", {
-                      description:
-                        "Open on desktop for full wallet experience!",
-                      duration: 4000,
-                    });
-                    return;
-                  }
+            <ConnectButton
+              label="Connect"
+              accountStatus="avatar"
+              chainStatus="none"
+            />
 
-                  try {
-                    connect({ connector: connectors[0] });
-                  } catch (error) {
-                    toast("Wallet Required", {
-                      description:
-                        "Please install MetaMask or Phantom browser extension!",
-                      duration: 5000,
-                    });
-                  }
-                }}
-                className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium h-8 flex items-center justify-center"
-              >
-                <Wallet size={14} className="mr-1" />
-                Connect
-              </button>
-            )}
-
-            <button onClick={() => setIsOpen(!isOpen)}>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-muted-foreground"
+            >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -175,29 +196,27 @@ export default function Navbar() {
       </div>
 
       <AnimatePresence>
-        <>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-background border-b border-border"
-            >
-              <div className="px-4 pt-2 pb-6 space-y-1">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="block px-3 py-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-background border-b border-border overflow-hidden"
+          >
+            <div className="px-4 pt-2 pb-6 space-y-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </nav>
   );

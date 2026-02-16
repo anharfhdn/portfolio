@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAccount } from "wagmi";
 import Link from "next/link";
 import { Home } from "lucide-react";
@@ -17,44 +17,37 @@ export default function AdminClient({
 }) {
   const { address, isConnected } = useAccount();
   const [postsLength, setPostsLength] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
-  const isAdmin =
-    isConnected && address
-      ? adminAddresses.some(
-          (adminAddr) => adminAddr.toLowerCase() === address.toLowerCase(),
-        )
-      : false;
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
+  const isAdmin = useMemo(() => {
+    if (!isConnected || !address) return false;
+    return adminAddresses.some(
+      (admin) => admin.toLowerCase() === address.toLowerCase(),
+    );
+  }, [address, isConnected, adminAddresses]);
 
   useEffect(() => {
     if (isAdmin) {
-      (async () => {
+      const fetchStats = async () => {
         try {
-          const remote = await getAllBlogPostsLengthAdmin();
-          setPostsLength(remote);
+          const length = await getAllBlogPostsLengthAdmin();
+          setPostsLength(length);
         } catch (e) {
-          setPostsLength(0);
-          console.warn("Failed to load posts from Supabase", e);
+          console.error("Failed to load admin stats", e);
         }
-      })();
+      };
+      fetchStats();
     }
   }, [isAdmin]);
 
-  useEffect(() => {
-    if (isAdmin) {
-      (async () => {
-        try {
-          const remote = await getAllBlogPostsLengthAdmin();
-          setPostsLength(remote);
-        } catch (e) {
-          console.warn("Failed to load posts", e);
-        }
-      })();
-    }
-  }, [isAdmin]);
-
-  if (typeof window === "undefined") {
-    return null;
-  }
+  if (!mounted) return null;
 
   if (!isConnected || !address) {
     return (
@@ -232,24 +225,6 @@ export default function AdminClient({
               </Card>
             </Link>
           </div>
-
-          <Card className="mt-12 p-6 bg-muted/50">
-            <h3 className="text-lg font-bold mb-4">Connected Wallet</h3>
-            <div className="space-y-2">
-              <p className="text-sm">
-                <span className="text-muted-foreground">Address:</span>
-                <span className="font-mono ml-2">
-                  {address.slice(0, 6)}........{address.slice(-6)}
-                </span>
-              </p>
-              <p className="text-sm">
-                <span className="text-muted-foreground">Status:</span>
-                <span className="ml-2 inline-block px-2 py-1 bg-emerald-500/20 text-emerald-500 rounded text-xs font-medium">
-                  Connected
-                </span>
-              </p>
-            </div>
-          </Card>
         </div>
       </main>
 

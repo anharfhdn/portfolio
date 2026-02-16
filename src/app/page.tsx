@@ -1,6 +1,5 @@
 "use client";
 
-import ClientProviders from "@/components/ClientProviders";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
@@ -12,19 +11,17 @@ import Philosophy from "@/components/sections/Philosophy";
 
 export default function Home() {
   return (
-    <ClientProviders>
-      <div className="flex flex-col min-h-screen bg-background">
-        <Navbar />
-        <main className="flex-grow">
-          <Hero />
-          <About />
-          <Projects />
-          <BlogPreview />
-          <Philosophy />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-    </ClientProviders>
+    <div className="flex flex-col min-h-screen bg-background">
+      <Navbar />
+      <main className="flex-grow">
+        <Hero />
+        <About />
+        <Projects />
+        <BlogPreview />
+        <Philosophy />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
   );
 }
