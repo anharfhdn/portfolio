@@ -43,11 +43,9 @@ export async function getAllBlogPosts(): Promise<SupabasePost[]> {
   }
 }
 
-export async function getAllBlogPostsAdmin(
-  showArchived: boolean = false,
-): Promise<SupabasePost[]> {
+export async function getAllBlogPostsAdmin(): Promise<SupabasePost[]> {
   try {
-    const url = `/api/blog?admin=true&archived=${showArchived}`;
+    const url = `/api/blog?admin=true`;
 
     const res = await fetch(url, {
       method: "GET",
@@ -105,7 +103,6 @@ export async function getBlogPostBySlug(
       .from("posts")
       .select("*")
       .eq("slug", slug)
-      .eq("status", "published")
       .limit(1)
       .single();
     if (error) {
@@ -155,11 +152,17 @@ export async function saveBlogPost(
   }
 }
 
-export async function deleteBlogPost(slug: string): Promise<boolean> {
+export async function deleteBlogPost(
+  slug: string,
+  permanent: boolean = true,
+): Promise<boolean> {
   try {
-    const res = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(
+      `/api/blog?slug=${encodeURIComponent(slug)}&permanent=${permanent}`,
+      {
+        method: "DELETE",
+      },
+    );
     if (!res.ok) {
       console.error("Failed to delete post via API:", await res.text());
       return false;

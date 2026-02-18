@@ -27,33 +27,25 @@ function isAdminRequest(req: Request): boolean {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const showArchived = url.searchParams.get("archived") === "true";
     const slug = url.searchParams.get("slug");
-    const admin = url.searchParams.get("admin") === "true";
+    const isAdmin =
+      url.searchParams.get("admin") === "true" || isAdminRequest(req);
 
     const supabaseAdmin = await adminClient();
     let query = supabaseAdmin.from("posts").select("*");
 
     if (slug) {
       query = query.eq("slug", slug);
-    } else if (admin || isAdminRequest(req)) {
-      if (!showArchived) {
-        query = query.or("status.is.null,status.neq.archived");
-      } else {
-        query = query.eq("status", "archived");
-      }
-    } else {
+    } else if (!isAdmin) {
       query = query.eq("status", "published");
     }
 
     const { data, error } = await query.order("date", { ascending: false });
 
-    if (error) {
-      return jsonError(error.message, 500);
-    }
+    if (error) return jsonError(error.message, 500);
     return jsonResponse(data ?? [], 200);
-  } catch (err) {
-    return jsonError((err as any).message || "Unknown error", 500);
+  } catch (err: any) {
+    return jsonError(err.message || "Unknown error", 500);
   }
 }
 

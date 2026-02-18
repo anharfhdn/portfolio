@@ -68,6 +68,16 @@ export default function AdminBlogClient({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [statusConfig, setStatusConfig] = useState<{
+    post: any;
+    newStatus: BlogStatus | null;
+  }>({
+    post: null,
+    newStatus: null,
+  });
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -183,25 +193,31 @@ export default function AdminBlogClient({
     });
   };
 
-  const handleStatusChange = async (
-    post: any,
-    newStatus: "draft" | "published" | "archived",
-  ) => {
-    const messages = {
-      draft: "Are you sure you want to move this post to draft?",
-      published: "Are you sure you want to publish this post?",
-      archived: "Are you sure you want to archive this post?",
-    };
+  const handleStatusChangeClick = (post: any, newStatus: BlogStatus) => {
+    setStatusConfig({ post, newStatus });
+    setStatusDialogOpen(true);
+  };
 
-    if (confirm(messages[newStatus])) {
+  const handleConfirmStatusChange = async () => {
+    const { post, newStatus } = statusConfig;
+    if (!post || !newStatus) return;
+
+    setIsChangingStatus(true);
+    try {
       const ok = await blogVisibilityPost(post.slug, newStatus);
 
       if (!ok) {
-        console.error(`Failed to change post status to ${newStatus}`);
-        alert(`Failed to change post status to ${newStatus}`);
-      } else {
-        await loadPosts();
+        console.warn(`Failed to update status to ${newStatus}`);
       }
+
+      await loadPosts();
+
+      setStatusDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Error updating post status.");
+    } finally {
+      setIsChangingStatus(false);
     }
   };
 
@@ -634,7 +650,7 @@ export default function AdminBlogClient({
                         <Select
                           value={post.status || "draft"}
                           onValueChange={(value: BlogStatus) =>
-                            handleStatusChange(post, value)
+                            handleStatusChangeClick(post, value)
                           }
                         >
                           <SelectTrigger className="h-9 w-[120px]">
@@ -654,10 +670,10 @@ export default function AdminBlogClient({
                             </div>
                           </SelectTrigger>
                           <SelectContent>
-                            {STATUS_OPTIONS.map((option) => {
-                              if (option.value === post.status)
-                                return null as any;
-                              return (
+                            <>
+                              {STATUS_OPTIONS.filter(
+                                (option) => option.value !== post.status,
+                              ).map((option) => (
                                 <SelectItem
                                   key={option.value}
                                   value={option.value}
@@ -667,8 +683,8 @@ export default function AdminBlogClient({
                                     <span>{option.label}</span>
                                   </div>
                                 </SelectItem>
-                              );
-                            })}
+                              ))}
+                            </>
                           </SelectContent>
                         </Select>
 
@@ -698,6 +714,18 @@ export default function AdminBlogClient({
           </div>
         </div>
       </main>
+
+      <ConfirmationDialog
+        open={statusDialogOpen}
+        onOpenChange={setStatusDialogOpen}
+        title="Change Post Status"
+        description={`Are you sure you want to change the status of "${statusConfig.post?.title}" to ${statusConfig.newStatus}?`}
+        confirmText="Update Status"
+        cancelText="Cancel"
+        onConfirm={handleConfirmStatusChange}
+        variant="default"
+        loading={isChangingStatus}
+      />
 
       <ConfirmationDialog
         open={deleteDialogOpen}
