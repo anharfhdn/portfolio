@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useAccount } from "wagmi";
 import Link from "next/link";
@@ -23,6 +24,7 @@ import Footer from "@/components/Footer";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   Select,
@@ -78,6 +80,7 @@ export default function AdminBlogClient({
     newStatus: null,
   });
   const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -250,35 +253,40 @@ export default function AdminBlogClient({
   };
 
   const handleSavePost = async (markdown: string | undefined) => {
-    const safeMarkdown = markdown ?? "";
+    setIsSaving(true);
+    try {
+      const safeMarkdown = markdown ?? "";
 
-    const newPost: BlogPost = {
-      ...formData,
-      markdown: safeMarkdown,
-      content: "",
-      date: editingPost?.date || new Date().toISOString().split("T")[0],
-    };
+      const newPost: BlogPost = {
+        ...formData,
+        markdown: safeMarkdown,
+        content: "",
+        date: editingPost?.date || new Date().toISOString().split("T")[0],
+      };
 
-    if (!newPost.slug) {
-      newPost.slug = newPost.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+      if (!newPost.slug) {
+        newPost.slug = newPost.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+      }
+
+      let updatedPosts;
+      if (editingPost) {
+        updatedPosts = posts.map((p) =>
+          p.slug === editingPost.slug ? newPost : p,
+        );
+      } else {
+        updatedPosts = [newPost, ...posts];
+      }
+
+      await savePosts(updatedPosts);
+      setIsEditing(false);
+      setIsCreating(false);
+      setEditingPost(null);
+    } finally {
+      setIsSaving(false);
     }
-
-    let updatedPosts;
-    if (editingPost) {
-      updatedPosts = posts.map((p) =>
-        p.slug === editingPost.slug ? newPost : p,
-      );
-    } else {
-      updatedPosts = [newPost, ...posts];
-    }
-
-    await savePosts(updatedPosts);
-    setIsEditing(false);
-    setIsCreating(false);
-    setEditingPost(null);
   };
 
   const handleCancel = () => {
@@ -397,7 +405,11 @@ export default function AdminBlogClient({
                 <h1 className="text-4xl font-bold tracking-tight">
                   {isCreating ? "Create New Post" : "Edit Post"}
                 </h1>
-                <Button variant="outline" onClick={handleCancel}>
+                <Button
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isSaving}
+                >
                   Cancel
                 </Button>
               </div>
@@ -413,6 +425,7 @@ export default function AdminBlogClient({
                       onChange={(e) =>
                         setFormData({ ...formData, title: e.target.value })
                       }
+                      disabled={isSaving}
                     />
                   </div>
 
@@ -425,6 +438,7 @@ export default function AdminBlogClient({
                       onChange={(e) =>
                         setFormData({ ...formData, slug: e.target.value })
                       }
+                      disabled={isSaving}
                     />
                   </div>
 
@@ -435,6 +449,7 @@ export default function AdminBlogClient({
                       onValueChange={(value) =>
                         setFormData({ ...formData, category: value })
                       }
+                      disabled={isSaving}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -460,6 +475,7 @@ export default function AdminBlogClient({
                       onChange={(e) =>
                         setFormData({ ...formData, author: e.target.value })
                       }
+                      disabled={isSaving}
                     />
                   </div>
 
@@ -472,7 +488,7 @@ export default function AdminBlogClient({
                         type="file"
                         accept=".webp,image/webp"
                         onChange={handleImageUpload}
-                        disabled={isUploading}
+                        disabled={isUploading || isSaving}
                         className="block w-full text-sm text-stone-500
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-md file:border-0
@@ -502,6 +518,7 @@ export default function AdminBlogClient({
                       onChange={(e) =>
                         setFormData({ ...formData, readTime: e.target.value })
                       }
+                      disabled={isSaving}
                     />
                   </div>
 
@@ -514,6 +531,7 @@ export default function AdminBlogClient({
                       onChange={(e) =>
                         setFormData({ ...formData, excerpt: e.target.value })
                       }
+                      disabled={isSaving}
                     />
                   </div>
                 </div>
@@ -522,6 +540,7 @@ export default function AdminBlogClient({
               <MarkdownEditor
                 initialContent={formData.markdown}
                 onSave={handleSavePost}
+                readOnly={isSaving}
               />
             </div>
           </div>
@@ -548,7 +567,11 @@ export default function AdminBlogClient({
                 Blog Management
               </h1>
               <div className="flex gap-2">
-                <Button onClick={handleCreatePost}>
+                <Button
+                  onClick={handleCreatePost}
+                  size="sm"
+                  disabled={isSaving || isChangingStatus || isDeleting}
+                >
                   <Plus size={18} className="mr-2" />
                   New Post
                 </Button>
@@ -625,9 +648,21 @@ export default function AdminBlogClient({
                 <p className="text-muted-foreground mb-4">
                   No blog posts yet. Create your first post!
                 </p>
-                <Button onClick={handleCreatePost}>
-                  <Plus size={18} className="mr-2" />
-                  Create First Post
+                <Button
+                  onClick={handleCreatePost}
+                  disabled={isSaving || isChangingStatus || isDeleting}
+                >
+                  {isSaving ? (
+                    <div className="flex items-center">
+                      <Spinner className="mr-2 h-4 w-4" />
+                      Creating...
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <Plus size={18} className="mr-2" />
+                      Create First Post
+                    </div>
+                  )}
                 </Button>
               </Card>
             ) : filteredPosts.length === 0 ? (
@@ -697,19 +732,35 @@ export default function AdminBlogClient({
                             handleStatusChangeClick(post, value)
                           }
                         >
-                          <SelectTrigger className="h-9 w-[120px]">
+                          <SelectTrigger
+                            className="h-9 w-[120px]"
+                            disabled={
+                              isChangingStatus &&
+                              statusConfig.post?.slug === post.slug
+                            }
+                          >
                             <div className="flex items-center gap-1">
-                              {post.status === "published" && (
-                                <span className="text-green-600">✅</span>
-                              )}
-                              {post.status === "draft" && (
-                                <span className="text-yellow-600">✏️</span>
-                              )}
-                              {post.status === "archived" && (
-                                <span className="text-gray-600">📁</span>
+                              {isChangingStatus &&
+                              statusConfig.post?.slug === post.slug ? (
+                                <Spinner className="size-3" />
+                              ) : (
+                                <>
+                                  {post.status === "published" && (
+                                    <span key="published">✅</span>
+                                  )}
+                                  {post.status === "draft" && (
+                                    <span key="draft">✏️</span>
+                                  )}
+                                  {post.status === "archived" && (
+                                    <span key="archived">📁</span>
+                                  )}
+                                </>
                               )}
                               <span className="text-xs capitalize">
-                                {post.status || "draft"}
+                                {isChangingStatus &&
+                                statusConfig.post?.slug === post.slug
+                                  ? "saving..."
+                                  : post.status || "draft"}
                               </span>
                             </div>
                           </SelectTrigger>
@@ -721,6 +772,10 @@ export default function AdminBlogClient({
                                 <SelectItem
                                   key={option.value}
                                   value={option.value}
+                                  disabled={
+                                    isChangingStatus &&
+                                    statusConfig.post?.slug === post.slug
+                                  }
                                 >
                                   <div className="flex items-center gap-2">
                                     <span>{option.icon}</span>
@@ -737,8 +792,18 @@ export default function AdminBlogClient({
                           size="sm"
                           variant="outline"
                           onClick={() => handleEditPost(post)}
+                          disabled={isSaving || isChangingStatus || isDeleting}
                         >
-                          <Edit size={16} />
+                          <>
+                            {isSaving ? (
+                              <>
+                                <Spinner className="size-4 animate-spin" />
+                                <span className="sr-only">Saving...</span>
+                              </>
+                            ) : (
+                              <Edit size={16} />
+                            )}
+                          </>
                         </Button>
 
                         <Button
@@ -746,8 +811,18 @@ export default function AdminBlogClient({
                           size="sm"
                           variant="outline"
                           onClick={() => handleDeleteClick(post.slug)}
+                          disabled={isDeleting && postToDelete !== post.slug}
                         >
-                          <Trash2 size={16} />
+                          <>
+                            {isDeleting && postToDelete === post.slug ? (
+                              <>
+                                <Spinner className="size-4 animate-spin" />
+                                <span className="sr-only">Deleting...</span>
+                              </>
+                            ) : (
+                              <Trash2 size={16} />
+                            )}
+                          </>
                         </Button>
                       </div>
                     </div>

@@ -30,6 +30,7 @@ export default function MarkdownEditor({
   const [mode, setMode] = useState<"edit" | "preview" | "split">("split");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -70,9 +71,14 @@ export default function MarkdownEditor({
     return () => clearTimeout(timer);
   }, [content, mode]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSaving(true);
     if (onSave) {
-      onSave(content);
+      try {
+        await onSave(content);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -169,15 +175,23 @@ export default function MarkdownEditor({
               <Download size={16} />
               Download
             </button>
-            {onSave && !readOnly && (
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-green-500 text-white hover:from-green-600 hover:to-red-600 shadow-md hover:shadow-lg transition-all duration-200"
-              >
-                <Save size={16} />
-                Save
-              </button>
-            )}
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-green-500 text-white"
+            >
+              {isSaving ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={16} />
+                  Save
+                </>
+              )}
+            </button>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-all duration-200"
