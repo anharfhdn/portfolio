@@ -40,6 +40,8 @@ import {
   blogVisibilityPost,
 } from "@/lib/blog";
 import { toast } from "sonner";
+import { Computer } from "lucide-react";
+import { z } from "zod";
 
 interface BlogPost {
   slug: string;
@@ -93,11 +95,24 @@ export default function AdminBlogClient({
     title: "",
     slug: "",
     category: "Web Development",
-    author: "Name",
+    author: "Anhar Fahrudin",
     image: "",
     excerpt: "",
     readTime: "5 min read",
     markdown: "",
+  });
+
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const blogPostSchema = z.object({
+    title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
+    slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
+    category: z.string().min(1, "Category is required"),
+    author: z.string().min(1, "Author is required").max(50, "Author must be less than 50 characters"),
+    image: z.string().url("Image must be a valid URL").optional().or(z.string().max(0)),
+    excerpt: z.string().min(1, "Excerpt is required").max(200, "Excerpt must be less than 200 characters"),
+    readTime: z.string().min(1, "Read time is required"),
+    markdown: z.string().min(1, "Content is required"),
   });
 
   const CATEGORIES = [
@@ -177,12 +192,13 @@ export default function AdminBlogClient({
       title: "",
       slug: "",
       category: "Web Development",
-      author: "Name",
+      author: "Anhar Fahrudin",
       image: "",
       excerpt: "",
       readTime: "5 min read",
       markdown: "",
     });
+    setValidationErrors({});
   };
 
   const handleEditPost = (post: BlogPost) => {
@@ -199,6 +215,7 @@ export default function AdminBlogClient({
       readTime: post.readTime,
       markdown: post.markdown,
     });
+    setValidationErrors({});
   };
 
   const handleStatusChangeClick = (post: any, newStatus: BlogStatus) => {
@@ -257,11 +274,41 @@ export default function AdminBlogClient({
     try {
       const safeMarkdown = markdown ?? "";
 
-      const newPost: BlogPost = {
+      const postData = {
         ...formData,
         markdown: safeMarkdown,
-        content: "",
+      };
+
+      const validation = blogPostSchema.safeParse(postData);
+      if (!validation.success) {
+        const errors: Record<string, string> = {};
+        validation.error.issues.forEach(issue => {
+          const field = issue.path[0] as string;
+          errors[field] = issue.message;
+          toast("Validation Error", {
+            description: `${field}: ${issue.message}`,
+            icon: <Computer size={16} className="text-emerald-500" />,
+          });
+        });
+        setValidationErrors(errors);
+        return;
+      } else {
+        setValidationErrors({});
+      }
+
+      const validatedData = validation.data;
+      
+      const newPost: BlogPost = {
+        slug: validatedData.slug,
+        title: validatedData.title,
         date: editingPost?.date || new Date().toISOString().split("T")[0],
+        author: validatedData.author,
+        category: validatedData.category,
+        readTime: validatedData.readTime,
+        image: validatedData.image || "",
+        excerpt: validatedData.excerpt,
+        content: "",
+        markdown: validatedData.markdown,
       };
 
       if (!newPost.slug) {
@@ -281,9 +328,20 @@ export default function AdminBlogClient({
       }
 
       await savePosts(updatedPosts);
+      toast("Success", {
+        description: editingPost ? "Post updated successfully" : "Post created successfully",
+        icon: <Computer size={16} className="text-emerald-500" />,
+      });
       setIsEditing(false);
       setIsCreating(false);
       setEditingPost(null);
+      setFormData({ title: "", slug: "", category: "Web Development", author: "Anhar Fahrudin", image: "", excerpt: "", readTime: "5 min read", markdown: "" });
+    } catch (error) {
+      toast("Error", {
+        description: "Failed to save post",
+        icon: <Computer size={16} className="text-emerald-500" />,
+      });
+      console.error("Save post error:", error);
     } finally {
       setIsSaving(false);
     }
@@ -293,6 +351,7 @@ export default function AdminBlogClient({
     setIsEditing(false);
     setIsCreating(false);
     setEditingPost(null);
+    setValidationErrors({});
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -422,10 +481,18 @@ export default function AdminBlogClient({
                       id="title"
                       placeholder="Post title"
                       value={formData.title}
-                      onChange={(e) =>
-                        setFormData({ ...formData, title: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setFormData({ ...formData, title: e.target.value });
+                        if (validationErrors.title) {
+                          setValidationErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.title;
+                            return newErrors;
+                          });
+                        }
+                      }}
                       disabled={isSaving}
+                      className={validationErrors.title ? "border-red-500" : ""}
                     />
                   </div>
 
@@ -435,10 +502,18 @@ export default function AdminBlogClient({
                       id="slug"
                       placeholder="auto-generated-from-title"
                       value={formData.slug}
-                      onChange={(e) =>
-                        setFormData({ ...formData, slug: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setFormData({ ...formData, slug: e.target.value });
+                        if (validationErrors.slug) {
+                          setValidationErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.slug;
+                            return newErrors;
+                          });
+                        }
+                      }}
                       disabled={isSaving}
+                      className={validationErrors.slug ? "border-red-500" : ""}
                     />
                   </div>
 
@@ -472,10 +547,18 @@ export default function AdminBlogClient({
                       id="author"
                       placeholder="Author name"
                       value={formData.author}
-                      onChange={(e) =>
-                        setFormData({ ...formData, author: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setFormData({ ...formData, author: e.target.value });
+                        if (validationErrors.author) {
+                          setValidationErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.author;
+                            return newErrors;
+                          });
+                        }
+                      }}
                       disabled={isSaving}
+                      className={validationErrors.author ? "border-red-500" : ""}
                     />
                   </div>
 
@@ -528,10 +611,18 @@ export default function AdminBlogClient({
                       id="excerpt"
                       placeholder="Brief description of the post"
                       value={formData.excerpt}
-                      onChange={(e) =>
-                        setFormData({ ...formData, excerpt: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setFormData({ ...formData, excerpt: e.target.value });
+                        if (validationErrors.excerpt) {
+                          setValidationErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.excerpt;
+                            return newErrors;
+                          });
+                        }
+                      }}
                       disabled={isSaving}
+                      className={validationErrors.excerpt ? "border-red-500" : ""}
                     />
                   </div>
                 </div>
