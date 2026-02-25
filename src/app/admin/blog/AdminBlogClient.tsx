@@ -458,7 +458,7 @@ export default function AdminBlogClient({
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         <main className="flex-grow pt-32 pb-24">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
               <div className="flex items-center justify-between mb-6">
                 <h1 className="text-4xl font-bold tracking-tight">
@@ -651,7 +651,7 @@ export default function AdminBlogClient({
       <Navbar />
 
       <main className="flex-grow pt-32 pb-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-4xl font-bold tracking-tight">
