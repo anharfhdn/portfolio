@@ -55,7 +55,7 @@ export default function BlogPage() {
       <Navbar />
 
       <main className="flex-grow pt-32 pb-24 grid-bg">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               Blog

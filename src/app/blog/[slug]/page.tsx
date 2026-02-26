@@ -112,7 +112,7 @@ export default function BlogPostPage({
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <main className="flex-grow pt-32 pb-24 grid-bg">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-12"
