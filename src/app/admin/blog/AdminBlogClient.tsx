@@ -57,6 +57,12 @@ interface BlogPost {
   status?: "draft" | "published" | "archived";
 }
 
+const generateSlug = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 export default function AdminBlogClient({
   adminAddresses,
 }: {
@@ -312,10 +318,7 @@ export default function AdminBlogClient({
       };
 
       if (!newPost.slug) {
-        newPost.slug = newPost.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "");
+        newPost.slug = generateSlug(newPost.title);
       }
 
       let updatedPosts;
@@ -482,11 +485,20 @@ export default function AdminBlogClient({
                       placeholder="Post title"
                       value={formData.title}
                       onChange={(e) => {
-                        setFormData({ ...formData, title: e.target.value });
-                        if (validationErrors.title) {
-                          setValidationErrors(prev => {
+                        const newTitle = e.target.value;
+                        const newSlug = generateSlug(newTitle);
+
+                        setFormData({
+                          ...formData,
+                          title: newTitle,
+                          slug: newSlug,
+                        });
+
+                        if (validationErrors.title || validationErrors.slug) {
+                          setValidationErrors((prev) => {
                             const newErrors = { ...prev };
                             delete newErrors.title;
+                            delete newErrors.slug;
                             return newErrors;
                           });
                         }
