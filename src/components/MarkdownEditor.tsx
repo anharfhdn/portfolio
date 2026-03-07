@@ -117,7 +117,7 @@ export default function MarkdownEditor({
               onClick={() => setMode("edit")}
               className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-semibold transition-all duration-200 ${
                 mode === "edit"
-                  ? "bg-emerald-500 text-white shadow-sm"
+                  ? "bg-emerald-500 text-white"
                   : "text-muted-foreground hover:text-foreground"
               }`}
               disabled={readOnly}
@@ -129,7 +129,7 @@ export default function MarkdownEditor({
               onClick={() => setMode("split")}
               className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-semibold transition-all duration-200 ${
                 mode === "split"
-                  ? "bg-emerald-500 text-white shadow-sm"
+                  ? "bg-emerald-500 text-white"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -140,7 +140,7 @@ export default function MarkdownEditor({
               onClick={() => setMode("preview")}
               className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-semibold transition-all duration-200 ${
                 mode === "preview"
-                  ? "bg-emerald-500 text-white shadow-sm"
+                  ? "bg-emerald-500 text-white"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -178,7 +178,7 @@ export default function MarkdownEditor({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-sm"
+              className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
             >
               {isSaving ? (
                 <>
