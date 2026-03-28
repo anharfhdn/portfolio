@@ -33,6 +33,14 @@ export default function Projects() {
       github: "#",
     },
     {
+      title: "STM32 Scale-to-Printer Bridge System",
+      client: "PT. Yupi Indo Jelly Gum",
+      description: "Building an embedded bridge to connect industrial scale and printer systems for automated weight labeling",
+      image: "/projects/tbc.png",
+      tags: ["Rust", "Embassy", "Microcontroller", "SMT32"],
+      github: "#",
+    },
+    {
       title: "E-Kanban Warehouse System",
       client: "PT. Denso Manufacturing Indonesia",
       description: "Migrate Existing Kanban System from EOL Xamarin to Kotlin.",
