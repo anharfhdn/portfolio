@@ -1,11 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Github, Lock, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { getAllProjects } from "@/lib/projects";
 
 interface Project {
+  slug: string;
   title: string;
   client: string;
   description: string;
@@ -15,143 +18,28 @@ interface Project {
 }
 
 export default function Projects() {
-  const projects: Project[] = [
-    {
-      title: "Trace Bean",
-      client: "Lisk Builder Challenge: Round 3",
-      description: "Decentralize Supply Chain Coffee Bean Management.",
-      image: "/projects/trace-bean.png",
-      tags: [
-        "Web3",
-        "Solidity",
-        "Smart Contract",
-        "NextJs",
-        "Ponder",
-        "PostgreSQL",
-        "IPFS",
-      ],
-      github: "#",
-    },
-    {
-      title: "STM32 Scale-to-Printer Bridge System",
-      client: "PT. Yupi Indo Jelly Gum",
-      description: "Building an embedded bridge to connect industrial scale and printer systems for automated weight labeling",
-      image: "/projects/tbc.png",
-      tags: ["Rust", "Embassy", "Microcontroller", "SMT32"],
-      github: "#",
-    },
-    {
-      title: "E-Kanban Warehouse System",
-      client: "PT. Denso Manufacturing Indonesia",
-      description: "Migrate Existing Kanban System from EOL Xamarin to Kotlin.",
-      image: "/projects/ekanban.png",
-      tags: ["Kotlin", "Xamarin", "MsSQL"],
-      github: "#",
-    },
-    {
-      title: "PBA Lend",
-      client: "Pelita Bangsa Academy",
-      description: "Decentralize Lending And Borrowing Application Bootcamp",
-      image: "/projects/pbalend.png",
-      tags: [
-        "Web3",
-        "Solidity",
-        "Smart Contract",
-        "NextJs",
-        "Ponder",
-        "PostgreSQL",
-      ],
-      github: "#",
-    },
-    {
-      title: "Barcode Gas System",
-      client: "PT. Iwatani Industrial Gas Indonesia",
-      description:
-        "Create Production, Quality Control, and Maintenance Android Applications.",
-      image: "/projects/iigi.png",
-      tags: ["PHP", "Code Igniter", "Javascript", "MsSQL"],
-      github: "#",
-    },
-    {
-      title: "Overall Equipment Effectiveness",
-      client: "Internal Project",
-      description:
-        "Building a web application to track and improve Overall Effectiveness Equipment (OEE) for better operational efficiency.",
-      image: "/projects/bit-oee.png",
-      tags: ["Go", "Javascript", "Vue.js", "MsSQL", "Centrifugo"],
-      github: "#",
-    },
-    {
-      title: "Wireless Button Control",
-      client: "PT. Mitsubishi Krama Yudha Motors & Manufacturing",
-      description:
-        "Developing a custom wireless button with ESP32, integrated into existing systems to enhance usability and improve operational workflow.",
-      image: "/projects/mkm-button.png",
-      tags: ["C++", "Arduino", "MQTT"],
-      github: "#",
-    },
-    {
-      title: "IoT Dashboard",
-      client: "PT. Denso Manufacturing Indonesia",
-      description:
-        "Supported expansion of existing IoT dashboard to additional production line and coordinated requirements gathering and stakeholder communication.",
-      image: "/projects/tbc.png",
-      tags: ["Go", "PHP", "MsSQL"],
-      github: "#",
-    },
-    {
-      title: "PLC Data Monitoring & Reporting",
-      client: "PT. Bintang Toedjoe",
-      description:
-        "Built a web system to read PLC data, calculate machine performance, store to database, and display real-time data with interactive reports.",
-      image: "/projects/fbd.png",
-      tags: ["Go", "Javascript", "Vue.js", "MsSQL"],
-      github: "#",
-    },
-    {
-      title: "Process Performance",
-      client: "PT. Yasulor Indonesia (L'Oreal Indonesia Plant)",
-      description: "Enhanced Process Performance Indicator System.",
-      image: "/projects/tbc.png",
-      tags: ["PHP", "Code Igniter", "Javascript", "MsSQL"],
-      github: "#",
-    },
-    {
-      title: "Waste Management System",
-      client: "PT. Yasulor Indonesia (L'Oreal Indonesia Plant)",
-      description: "Developing Waste Management System.",
-      image: "/projects/tbc.png",
-      tags: ["Go", "Javascript", "Vue.js", "MsSQL"],
-      github: "#",
-    },
-    {
-      title: "PLC Integrator",
-      client: "PT. Bintang Toedjoe",
-      description:
-        "Integrate MicroNIR App and Siemens S7-300 PLC into one App.",
-      image: "/projects/pat.png",
-      tags: ["Go", "Javascript", "Vue.js"],
-      github: "#",
-    },
-    {
-      title: "UHF RFID PPE Identification System",
-      client: "Personal & College Project",
-      description:
-        "Developed a final project using UHF RFID to track personal protective equipment.",
-      image: "/projects/uhf-rfid.png",
-      tags: ["C++", "Arduino"],
-      github: "https://github.com/anharfhdn/Project-UHF-RFID",
-    },
-    {
-      title: "Arduino-Based IC Tester",
-      client: "Personal & College Project",
-      description:
-        "Developed a digital logic gate tester with Arduino to verify ICs for AND, OR, NAND, and NOR functionality.",
-      image: "/projects/ic-tester.png",
-      tags: ["C++", "Arduino"],
-      github: "https://github.com/anharfhdn/Arduino-Logic-Gates-Tester",
-    },
-  ];
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [mounted, setMounted] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    (async () => {
+      const all = await getAllProjects();
+      setProjects(
+        all.map((p) => ({
+          slug: p.slug,
+          title: p.title,
+          client: p.client || "",
+          description: p.description || "",
+          image: p.image || "",
+          tags: p.tags || [],
+          github: p.confidential ? "#" : p.link || "#",
+        })),
+      );
+      setLoaded(true);
+    })();
+  }, []);
 
   const handleProjectClick = (project: Project) => {
     if (project.github === "#") {
@@ -205,10 +93,30 @@ export default function Projects() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, index) => (
+          {!loaded ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={`skeleton-${i}`}
+                className="flex flex-col bg-background/60 border border-emerald-500/20 rounded-2xl overflow-hidden animate-pulse"
+              >
+                <div className="aspect-[16/9] bg-muted" />
+                <div className="p-7 space-y-4">
+                  <div className="h-4 w-2/3 rounded bg-muted" />
+                  <div className="h-6 w-full rounded bg-muted" />
+                  <div className="h-4 w-full rounded bg-muted" />
+                  <div className="h-4 w-5/6 rounded bg-muted" />
+                </div>
+              </div>
+            ))
+          ) : projects.length === 0 ? (
+            <p className="text-muted-foreground col-span-full text-center py-12">
+              No projects published yet.
+            </p>
+          ) : (
+            projects.map((project, index) => (
             <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 20 }}
+              key={project.slug}
+              initial={mounted ? { opacity: 0, y: 20 } : false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
@@ -218,13 +126,22 @@ export default function Projects() {
                                      transition-all duration-500 relative"
             >
               <div className="relative aspect-[16/9] overflow-hidden bg-muted">
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105 group-hover:rotate-1"
-                />
+                {project.image ? (
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105 group-hover:rotate-1"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 flex items-center justify-center">
+                    <span className="text-emerald-600 font-mono text-sm">
+                      No Image
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="p-7 flex flex-col flex-1">
@@ -280,7 +197,8 @@ export default function Projects() {
                 </div>
               </div>
             </motion.div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </section>

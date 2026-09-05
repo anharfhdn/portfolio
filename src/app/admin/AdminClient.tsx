@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAllBlogPostsLengthAdmin } from "@/lib/blog";
+import { getProjectsCountAdmin } from "@/lib/projects";
 
 export default function AdminClient({
   adminAddresses = [],
@@ -17,6 +18,7 @@ export default function AdminClient({
 }) {
   const { address, isConnected } = useAccount();
   const [postsLength, setPostsLength] = useState(0);
+  const [projectsLength, setProjectsLength] = useState(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -41,6 +43,12 @@ export default function AdminClient({
           setPostsLength(length);
         } catch (e) {
           console.error("Failed to load admin stats", e);
+        }
+        try {
+          const count = await getProjectsCountAdmin();
+          setProjectsLength(count);
+        } catch (e) {
+          console.error("Failed to load project stats", e);
         }
       };
       fetchStats();
@@ -140,7 +148,7 @@ export default function AdminClient({
               </Card>
             </Link>
 
-            <Link href="/admin">
+            <Link href="/admin/projects">
               <Card className="p-6 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -149,10 +157,12 @@ export default function AdminClient({
                       Manage portfolio projects
                     </p>
                   </div>
-                  <h3 className="text-4xl font-bold text-gray-300">0</h3>
+                  <h3 className="text-4xl font-bold text-emerald-600">
+                    {projectsLength}
+                  </h3>
                 </div>
-                <Button variant="outline" className="w-full" disabled>
-                  Coming Soon
+                <Button variant="outline" className="w-full">
+                  Manage Projects
                 </Button>
               </Card>
             </Link>
