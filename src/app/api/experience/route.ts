@@ -40,7 +40,7 @@ export async function GET(req: Request) {
       url.searchParams.get("admin") === "true" || isAdminRequest(req);
 
     const supabaseAdmin = await adminClient();
-    let query = supabaseAdmin.from("projects").select("*");
+    let query = supabaseAdmin.from("experience").select("*");
 
     if (slug) {
       query = query.eq("slug", slug);
@@ -50,7 +50,7 @@ export async function GET(req: Request) {
 
     const { data, error } = await query
       .order("display_order", { ascending: true })
-      .order("date", { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (error) return jsonError(error.message, 500);
     return jsonResponse(data ?? [], 200);
@@ -62,57 +62,51 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    let projects = body?.projects ?? body?.project ?? body;
+    let experience = body?.experience ?? body?.items ?? body;
 
-    if (!projects) {
-      return jsonError("Missing project(s) in request body", 400);
+    if (!experience) {
+      return jsonError("Missing experience item(s) in request body", 400);
     }
 
-    if (!Array.isArray(projects)) projects = [projects];
+    if (!Array.isArray(experience)) experience = [experience];
 
     const allowedCols = [
       "id",
-      "title",
       "slug",
-      "client",
+      "company",
+      "role",
+      "period",
       "description",
-      "image",
-      "tags",
-      "tag_icons",
-      "link",
-      "confidential",
+      "location",
       "display_order",
       "status",
-      "date",
       "created_at",
       "updated_at",
       "owner",
     ];
 
-    const prepared = projects.map((p: any) => {
+    const prepared = experience.map((e: any) => {
       const out: any = {};
-      out.status = p.status || "draft";
-      out.confidential = p.confidential ?? p.link === "#";
-      if (out.confidential && !p.link) out.link = "#";
+      out.status = e.status || "draft";
 
       for (const col of allowedCols) {
-        if (col === "status" || col === "confidential") continue;
+        if (col === "status") continue;
         if (col === "created_at") {
-          out.created_at = p.created_at ?? new Date().toISOString();
+          out.created_at = e.created_at ?? new Date().toISOString();
           continue;
         }
         if (col === "updated_at") {
           out.updated_at = new Date().toISOString();
           continue;
         }
-        if (p[col] !== undefined) out[col] = p[col];
+        if (e[col] !== undefined) out[col] = e[col];
       }
       return out;
     });
 
     const supabaseAdmin = await adminClient();
     const { data, error } = await supabaseAdmin
-      .from("projects")
+      .from("experience")
       .upsert(prepared, { onConflict: "slug" })
       .select();
     if (error) return jsonError(error.message, 500);
@@ -155,7 +149,7 @@ export async function PUT(req: Request) {
       }
 
       const { data, error } = await supabaseAdmin
-        .from("projects")
+        .from("experience")
         .update({
           status: newStatus,
           updated_at: new Date().toISOString(),
@@ -177,7 +171,7 @@ export async function PUT(req: Request) {
     };
 
     const { data, error } = await supabaseAdmin
-      .from("projects")
+      .from("experience")
       .update(normalizedUpdates)
       .eq("slug", slug)
       .select()
@@ -202,14 +196,14 @@ export async function DELETE(req: Request) {
 
     if (permanent) {
       const { error } = await supabaseAdmin
-        .from("projects")
+        .from("experience")
         .delete()
         .eq("slug", slug);
       if (error) return jsonError(error.message, 500);
       return jsonResponse({ ok: true }, 200);
     } else {
       const { data, error } = await supabaseAdmin
-        .from("projects")
+        .from("experience")
         .update({
           status: "archived",
           updated_at: new Date().toISOString(),

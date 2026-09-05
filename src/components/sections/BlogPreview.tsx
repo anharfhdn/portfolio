@@ -8,6 +8,8 @@ import { getAllBlogPosts } from "@/lib/blog";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
+const FEATURED_POST_COUNT = 3;
+
 export default function BlogPreview() {
   const [posts, setPosts] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -21,7 +23,7 @@ export default function BlogPreview() {
         const dateB = new Date(b.date || "1970-01-01");
         return dateB.getTime() - dateA.getTime();
       });
-      setPosts(sortedPosts.slice(0, 3) as any[]);
+      setPosts(sortedPosts.slice(0, FEATURED_POST_COUNT) as any[]);
     })();
   }, []);
 

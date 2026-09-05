@@ -39,9 +39,12 @@ import {
   deleteBlogPost,
   blogVisibilityPost,
 } from "@/lib/blog";
+import { getSiteSettings } from "@/lib/settings";
 import { toast } from "sonner";
 import { Computer } from "lucide-react";
 import { z } from "zod";
+import { STATUS_OPTIONS } from "@/lib/status";
+import type {ExperienceStatus} from "@/lib/experience";
 
 interface BlogPost {
   slug: string;
@@ -134,11 +137,7 @@ export default function AdminBlogClient({
     "Life",
   ];
 
-  const STATUS_OPTIONS = [
-    { value: "published", label: "Publish", icon: "✅" },
-    { value: "draft", label: "Move to Draft", icon: "✏️" },
-    { value: "archived", label: "Archive", icon: "📁" },
-  ] as const;
+  const [categoryOptions, setCategoryOptions] = useState<string[]>(CATEGORIES);
 
   type BlogStatus = "draft" | "published" | "archived";
 
@@ -158,6 +157,14 @@ export default function AdminBlogClient({
         } catch (e) {
           setPosts([]);
           console.warn("Failed to load posts from Supabase", e);
+        }
+        try {
+          const settings = await getSiteSettings();
+          if (settings.blog_categories.length > 0) {
+            setCategoryOptions(settings.blog_categories);
+          }
+        } catch (e) {
+          console.warn("Failed to load categories from settings", e);
         }
       })();
     }
@@ -539,7 +546,7 @@ export default function AdminBlogClient({
                       </SelectTrigger>
                       <SelectContent>
                         <>
-                          {CATEGORIES.map((cat) => (
+                          {categoryOptions.map((cat) => (
                             <SelectItem key={cat} value={cat}>
                               {cat}
                             </SelectItem>
@@ -826,63 +833,25 @@ export default function AdminBlogClient({
                         </Link>
 
                         <Select
-                          value={post.status || "draft"}
-                          onValueChange={(value: BlogStatus) =>
-                            handleStatusChangeClick(post, value)
-                          }
+                            value={post.status || "draft"}
+                            onValueChange={(v: ExperienceStatus) => {
+                              setStatusConfig({ post, newStatus: v });
+                              setStatusDialogOpen(true);
+                            }}
                         >
-                          <SelectTrigger
-                            className="h-9 w-[120px]"
-                            disabled={
-                              isChangingStatus &&
-                              statusConfig.post?.slug === post.slug
-                            }
-                          >
-                            <div className="flex items-center gap-1">
-                              {isChangingStatus &&
-                              statusConfig.post?.slug === post.slug ? (
-                                <Spinner className="size-3" />
-                              ) : (
-                                <>
-                                  {post.status === "published" && (
-                                    <span key="published">✅</span>
-                                  )}
-                                  {post.status === "draft" && (
-                                    <span key="draft">✏️</span>
-                                  )}
-                                  {post.status === "archived" && (
-                                    <span key="archived">📁</span>
-                                  )}
-                                </>
-                              )}
-                              <span className="text-xs capitalize">
-                                {isChangingStatus &&
-                                statusConfig.post?.slug === post.slug
-                                  ? "saving..."
-                                  : post.status || "draft"}
-                              </span>
-                            </div>
+                          <SelectTrigger className="h-9 w-[120px]">
+                          <span className="text-xs capitalize">
+                            {post.status || "draft"}
+                          </span>
                           </SelectTrigger>
                           <SelectContent>
-                            <>
-                              {STATUS_OPTIONS.filter(
-                                (option) => option.value !== post.status,
-                              ).map((option) => (
-                                <SelectItem
-                                  key={option.value}
-                                  value={option.value}
-                                  disabled={
-                                    isChangingStatus &&
-                                    statusConfig.post?.slug === post.slug
-                                  }
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <span>{option.icon}</span>
-                                    <span>{option.label}</span>
-                                  </div>
+                            {STATUS_OPTIONS.filter(
+                                (o) => o.value !== post.status,
+                            ).map((o) => (
+                                <SelectItem key={o.value} value={o.value}>
+                                  {o.label}
                                 </SelectItem>
-                              ))}
-                            </>
+                            ))}
                           </SelectContent>
                         </Select>
 

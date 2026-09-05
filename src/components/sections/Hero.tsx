@@ -12,8 +12,17 @@ import {
 import Link from "next/link";
 import ResumeButton from "@/components/ui/ResumeButton";
 import { workExperienceDuration } from "@/lib/utils";
+import { getSiteSettings, DEFAULT_SETTINGS } from "@/lib/settings";
+import { useEffect, useState } from "react";
 
 export default function Hero() {
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    (async () => {
+      setSettings(await getSiteSettings());
+    })();
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center justify-center grid-bg bg-emerald-50/30 dark:bg-emerald-950/10 overflow-hidden pt-16">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] -z-10" />
@@ -25,33 +34,25 @@ export default function Hero() {
           transition={{ duration: 0.5 }}
         >
           <span className="inline-block px-3 py-1 text-xs font-semibold tracking-widest text-emerald-600 uppercase bg-emerald-500/10 rounded-full mb-6">
-            🌏 Open to Remote/Onsite • Full-Stack + Blockchain Developer
+            {settings.availability_badge}
           </span>
 
           <h1 className="text-5xl md:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
             <span className="text-muted-foreground italic font-light">
-              ENGINEERING
+              {settings.hero_title_line1}
             </span>
             <br />
-            REAL-WORLD SYSTEMS
+            {settings.hero_title_line2}
           </h1>
-          <p className="max-w-4xl mx-auto text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed">
-            <strong>Full-Stack Software Engineer</strong> with{" "}
-            <strong>{workExperienceDuration()} years</strong> of experience
-            building production-grade
-            <br />
-            <strong>industrial automation, IoT, and data-driven</strong>{" "}
-            application systems.
-            <br />
-            <br />
-            Currently advancing the <strong>Web3 ecosystem</strong>—engineering
-            decentralized solutions across
-            <br />
-            <strong> DeFi, NFTs, and RWA</strong>. Specializing in
-            <strong> asset tokenization</strong> and{" "}
-            <strong>Smart Contract architecture</strong> (Solidity, Rust, EVM)
-            to build a more transparent, <strong>decentralized future</strong>.
-          </p>
+          <p
+            className="max-w-4xl mx-auto text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed"
+            dangerouslySetInnerHTML={{
+              __html: settings.hero_bio.replaceAll(
+                "{{years}}",
+                workExperienceDuration(settings.career_start),
+              ),
+            }}
+          />
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

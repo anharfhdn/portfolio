@@ -10,6 +10,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAllBlogPostsLengthAdmin } from "@/lib/blog";
 import { getProjectsCountAdmin } from "@/lib/projects";
+import { getSkillsCountAdmin } from "@/lib/skills";
+import { getExperienceCountAdmin } from "@/lib/experience";
 
 export default function AdminClient({
   adminAddresses = [],
@@ -19,6 +21,8 @@ export default function AdminClient({
   const { address, isConnected } = useAccount();
   const [postsLength, setPostsLength] = useState(0);
   const [projectsLength, setProjectsLength] = useState(0);
+  const [skillsLength, setSkillsLength] = useState(0);
+  const [experienceLength, setExperienceLength] = useState(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -49,6 +53,18 @@ export default function AdminClient({
           setProjectsLength(count);
         } catch (e) {
           console.error("Failed to load project stats", e);
+        }
+        try {
+          const count = await getSkillsCountAdmin();
+          setSkillsLength(count);
+        } catch (e) {
+          console.error("Failed to load skill stats", e);
+        }
+        try {
+          const count = await getExperienceCountAdmin();
+          setExperienceLength(count);
+        } catch (e) {
+          console.error("Failed to load experience stats", e);
         }
       };
       fetchStats();
@@ -184,19 +200,56 @@ export default function AdminClient({
               </Card>
             </Link>
 
-            <Link href="/admin">
+            <Link href="/admin/skills">
+              <Card className="p-6 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold mb-2">Skills</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Manage skills and stack lists
+                    </p>
+                  </div>
+                  <h3 className="text-4xl font-bold text-emerald-600">
+                    {skillsLength}
+                  </h3>
+                </div>
+                <Button variant="outline" className="w-full">
+                  Manage Skills
+                </Button>
+              </Card>
+            </Link>
+
+            <Link href="/admin/experience">
+              <Card className="p-6 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold mb-2">Experience</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Manage work experience
+                    </p>
+                  </div>
+                  <h3 className="text-4xl font-bold text-emerald-600">
+                    {experienceLength}
+                  </h3>
+                </div>
+                <Button variant="outline" className="w-full">
+                  Manage Experience
+                </Button>
+              </Card>
+            </Link>
+
+            <Link href="/admin/settings">
               <Card className="p-6 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-lg font-bold mb-2">Settings</h3>
                     <p className="text-sm text-muted-foreground">
-                      Configure admin panel settings
+                      Profile, contacts, socials, categories
                     </p>
                   </div>
-                  <h3 className="text-4xl font-bold text-gray-300">0</h3>
                 </div>
-                <Button variant="outline" className="w-full" disabled>
-                  Coming Soon
+                <Button variant="outline" className="w-full">
+                  Manage Settings
                 </Button>
               </Card>
             </Link>

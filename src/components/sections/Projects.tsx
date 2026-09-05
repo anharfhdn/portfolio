@@ -6,6 +6,7 @@ import { Github, Lock, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { getAllProjects } from "@/lib/projects";
+import { TechIcon } from "@/components/tech-icons";
 
 interface Project {
   slug: string;
@@ -14,8 +15,11 @@ interface Project {
   description: string;
   image: string;
   tags: string[];
+  tag_icons: string[];
   github: string;
 }
+
+const SKELETON_COUNT = 6;
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -34,6 +38,7 @@ export default function Projects() {
           description: p.description || "",
           image: p.image || "",
           tags: p.tags || [],
+          tag_icons: p.tag_icons || [],
           github: p.confidential ? "#" : p.link || "#",
         })),
       );
@@ -94,7 +99,7 @@ export default function Projects() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {!loaded ? (
-            Array.from({ length: 6 }).map((_, i) => (
+            Array.from({ length: SKELETON_COUNT }).map((_, i) => (
               <div
                 key={`skeleton-${i}`}
                 className="flex flex-col bg-background/60 border border-emerald-500/20 rounded-2xl overflow-hidden animate-pulse"
@@ -146,14 +151,17 @@ export default function Projects() {
 
               <div className="p-7 flex flex-col flex-1">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/10"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  {project.tags.map((tag, i) =>
+                    project.tag_icons[i] ? (
+                      <span
+                        key={`${tag}-${i}`}
+                        title={tag}
+                        className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 p-1.5 rounded border border-emerald-500/10"
+                      >
+                        <TechIcon icon={project.tag_icons[i]} size={16} />
+                      </span>
+                    ) : null,
+                  )}
                 </div>
 
                 <h3 className="text-2xl font-bold mb-1 group-hover:text-emerald-500 transition-colors">

@@ -15,6 +15,8 @@ import {
   Search,
   X,
   Lock,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -43,6 +45,15 @@ import {
 import { toast } from "sonner";
 import { Computer } from "lucide-react";
 import { z } from "zod";
+import {
+  moveAndRenumber,
+  orderedPosition,
+  orderedCount,
+  nextOrder,
+} from "@/lib/reorder";
+import { STATUS_OPTIONS } from "@/lib/status";
+import IconPicker from "@/components/ui/icon-picker";
+import type {ExperienceStatus} from "@/lib/experience";
 
 interface Project {
   slug: string;
@@ -51,6 +62,7 @@ interface Project {
   description: string;
   image: string;
   tags: string[];
+  tag_icons?: string[];
   link: string;
   confidential: boolean;
   display_order: number;
@@ -69,12 +81,12 @@ const emptyForm = {
   slug: "",
   client: "",
   description: "",
-  tags: "",
   link: "",
   confidential: false,
-  display_order: "0",
   image: "",
 };
+
+type TagRow = { name: string; icon: string };
 
 export default function AdminProjectsClient({
   adminAddresses,
@@ -102,11 +114,13 @@ export default function AdminProjectsClient({
   });
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [reorderingSlug, setReorderingSlug] = useState<string | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
   const [formData, setFormData] = useState(emptyForm);
+  const [tagRows, setTagRows] = useState<TagRow[]>([]);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -128,29 +142,18 @@ export default function AdminProjectsClient({
       .string()
       .min(1, "Description is required")
       .max(500, "Description must be less than 500 characters"),
-    tags: z.string(),
     link: z
       .string()
       .url("Link must be a valid URL")
       .optional()
       .or(z.string().max(0))
       .or(z.literal("#")),
-    display_order: z.coerce
-      .number()
-      .int("Order must be an integer")
-      .min(0, "Order must be 0 or more"),
     image: z
       .string()
       .url("Image must be a valid URL")
       .optional()
       .or(z.string().max(0)),
   });
-
-  const STATUS_OPTIONS = [
-    { value: "published", label: "Publish", icon: "✅" },
-    { value: "draft", label: "Move to Draft", icon: "✏️" },
-    { value: "archived", label: "Archive", icon: "📁" },
-  ] as const;
 
   const STATUS_FILTERS = ["draft", "published", "archived"];
 
@@ -208,6 +211,7 @@ export default function AdminProjectsClient({
     setIsCreating(true);
     setEditingProject(null);
     setFormData(emptyForm);
+    setTagRows([]);
     setValidationErrors({});
   };
 
@@ -220,13 +224,28 @@ export default function AdminProjectsClient({
       slug: project.slug,
       client: project.client || "",
       description: project.description || "",
-      tags: (project.tags || []).join(", "),
       link: project.confidential ? "" : project.link || "",
       confidential: project.confidential ?? project.link === "#",
-      display_order: String(project.display_order ?? 0),
       image: project.image || "",
     });
+    const tags = project.tags || [];
+    const icons = project.tag_icons || [];
+    setTagRows(tags.map((name, i) => ({ name, icon: icons[i] || "" })));
     setValidationErrors({});
+  };
+
+  const handleMoveProject = async (slug: string, dir: -1 | 1) => {
+    const updated = moveAndRenumber(projects, slug, dir);
+    if (!updated) return;
+    setReorderingSlug(slug);
+    try {
+      await saveProjects(updated);
+    } catch (e) {
+      console.error("Error reordering projects:", e);
+      toast("Error", { description: "Failed to reorder projects" });
+    } finally {
+      setReorderingSlug(null);
+    }
   };
 
   const handleStatusChangeClick = (project: any, newStatus: ProjectStatus) => {
@@ -301,10 +320,9 @@ export default function AdminProjectsClient({
       }
 
       const validatedData = validation.data;
-      const tags = validatedData.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean);
+      const rows = tagRows
+        .map((r) => ({ name: r.name.trim(), icon: r.icon }))
+        .filter((r) => r.name !== "");
 
       const newProject: Project = {
         slug: validatedData.slug || generateSlug(validatedData.title),
@@ -312,10 +330,14 @@ export default function AdminProjectsClient({
         client: validatedData.client,
         description: validatedData.description,
         image: validatedData.image || "",
-        tags,
+        tags: rows.map((r) => r.name),
+        tag_icons: rows.map((r) => r.icon),
         link: formData.confidential ? "#" : validatedData.link || "#",
         confidential: formData.confidential,
-        display_order: validatedData.display_order,
+        display_order: editingProject
+          ? (projects.find((p) => p.slug === editingProject.slug)
+              ?.display_order ?? 0)
+          : nextOrder(projects),
         date:
           editingProject?.date || new Date().toISOString().split("T")[0],
       };
@@ -340,6 +362,7 @@ export default function AdminProjectsClient({
       setIsCreating(false);
       setEditingProject(null);
       setFormData(emptyForm);
+      setTagRows([]);
     } catch (error) {
       toast("Error", {
         description: "Failed to save project",
@@ -355,6 +378,7 @@ export default function AdminProjectsClient({
     setIsEditing(false);
     setIsCreating(false);
     setEditingProject(null);
+    setTagRows([]);
     setValidationErrors({});
   };
 
@@ -537,28 +561,6 @@ export default function AdminProjectsClient({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="display_order">Order</Label>
-                    <Input
-                      id="display_order"
-                      type="number"
-                      min={0}
-                      placeholder="0"
-                      value={formData.display_order}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          display_order: e.target.value,
-                        });
-                        clearError("display_order");
-                      }}
-                      disabled={isSaving}
-                      className={
-                        validationErrors.display_order ? "border-red-500" : ""
-                      }
-                    />
-                  </div>
-
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="description">Description *</Label>
                     <Textarea
@@ -580,16 +582,60 @@ export default function AdminProjectsClient({
                   </div>
 
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="tags">Tags (comma separated)</Label>
-                    <Input
-                      id="tags"
-                      placeholder="Go, Javascript, Vue.js"
-                      value={formData.tags}
-                      onChange={(e) =>
-                        setFormData({ ...formData, tags: e.target.value })
-                      }
-                      disabled={isSaving}
-                    />
+                    <Label>Tags & Icons</Label>
+                    <div className="space-y-2">
+                      {tagRows.map((row, i) => (
+                        <div key={i} className="flex gap-2">
+                          <Input
+                            placeholder="Go, Rust, Solidity..."
+                            value={row.name}
+                            onChange={(e) =>
+                              setTagRows((prev) =>
+                                prev.map((r, j) =>
+                                  j === i ? { ...r, name: e.target.value } : r,
+                                ),
+                              )
+                            }
+                            disabled={isSaving}
+                            className="flex-1"
+                          />
+                          <IconPicker
+                            value={row.icon}
+                            disabled={isSaving}
+                            onChange={(icon) =>
+                              setTagRows((prev) =>
+                                prev.map((r, j) =>
+                                  j === i ? { ...r, icon } : r,
+                                ),
+                              )
+                            }
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            disabled={isSaving}
+                            onClick={() =>
+                              setTagRows((prev) =>
+                                prev.filter((_, j) => j !== i),
+                              )
+                            }
+                          >
+                            <X size={16} />
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={isSaving}
+                        onClick={() =>
+                          setTagRows((prev) => [...prev, { name: "", icon: "" }])
+                        }
+                      >
+                        <Plus size={16} className="mr-2" />
+                        Add Tag
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -870,64 +916,57 @@ export default function AdminProjectsClient({
                       </div>
 
                       <div className="flex gap-2 h-fit">
-                        <Select
-                          value={project.status || "draft"}
-                          onValueChange={(value: ProjectStatus) =>
-                            handleStatusChangeClick(project, value)
-                          }
-                        >
-                          <SelectTrigger
-                            className="h-9 w-[120px]"
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            className="h-4 px-1"
+                            size="sm"
+                            variant="ghost"
+                            title="Move up"
+                            onClick={() => handleMoveProject(project.slug, -1)}
                             disabled={
-                              isChangingStatus &&
-                              statusConfig.project?.slug === project.slug
+                              reorderingSlug !== null ||
+                              isSaving ||
+                              orderedPosition(projects, project.slug) <= 0
                             }
                           >
-                            <div className="flex items-center gap-1">
-                              {isChangingStatus &&
-                              statusConfig.project?.slug === project.slug ? (
-                                <Spinner className="size-3" />
-                              ) : (
-                                <>
-                                  {project.status === "published" && (
-                                    <span key="published">✅</span>
-                                  )}
-                                  {project.status === "draft" && (
-                                    <span key="draft">✏️</span>
-                                  )}
-                                  {project.status === "archived" && (
-                                    <span key="archived">📁</span>
-                                  )}
-                                </>
-                              )}
-                              <span className="text-xs capitalize">
-                                {isChangingStatus &&
-                                statusConfig.project?.slug === project.slug
-                                  ? "saving..."
-                                  : project.status || "draft"}
-                              </span>
-                            </div>
+                            <ChevronUp size={14} />
+                          </Button>
+                          <Button
+                            className="h-4 px-1"
+                            size="sm"
+                            variant="ghost"
+                            title="Move down"
+                            onClick={() => handleMoveProject(project.slug, 1)}
+                            disabled={
+                              reorderingSlug !== null ||
+                              isSaving ||
+                              orderedPosition(projects, project.slug) >=
+                                orderedCount(projects) - 1
+                            }
+                          >
+                            <ChevronDown size={14} />
+                          </Button>
+                        </div>
+                        <Select
+                            value={project.status || "draft"}
+                            onValueChange={(v: ExperienceStatus) => {
+                              setStatusConfig({ project, newStatus: v });
+                              setStatusDialogOpen(true);
+                            }}
+                        >
+                          <SelectTrigger className="h-9 w-[120px]">
+                          <span className="text-xs capitalize">
+                            {project.status || "draft"}
+                          </span>
                           </SelectTrigger>
                           <SelectContent>
-                            <>
-                              {STATUS_OPTIONS.filter(
-                                (option) => option.value !== project.status,
-                              ).map((option) => (
-                                <SelectItem
-                                  key={option.value}
-                                  value={option.value}
-                                  disabled={
-                                    isChangingStatus &&
-                                    statusConfig.project?.slug === project.slug
-                                  }
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <span>{option.icon}</span>
-                                    <span>{option.label}</span>
-                                  </div>
+                            {STATUS_OPTIONS.filter(
+                                (o) => o.value !== project.status,
+                            ).map((o) => (
+                                <SelectItem key={o.value} value={o.value}>
+                                  {o.label}
                                 </SelectItem>
-                              ))}
-                            </>
+                            ))}
                           </SelectContent>
                         </Select>
 

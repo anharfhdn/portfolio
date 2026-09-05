@@ -40,7 +40,7 @@ export async function GET(req: Request) {
       url.searchParams.get("admin") === "true" || isAdminRequest(req);
 
     const supabaseAdmin = await adminClient();
-    let query = supabaseAdmin.from("projects").select("*");
+    let query = supabaseAdmin.from("skills").select("*");
 
     if (slug) {
       query = query.eq("slug", slug);
@@ -48,9 +48,9 @@ export async function GET(req: Request) {
       query = query.eq("status", "published");
     }
 
-    const { data, error } = await query
-      .order("display_order", { ascending: true })
-      .order("date", { ascending: false });
+    const { data, error } = await query.order("display_order", {
+      ascending: true,
+    });
 
     if (error) return jsonError(error.message, 500);
     return jsonResponse(data ?? [], 200);
@@ -62,57 +62,50 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    let projects = body?.projects ?? body?.project ?? body;
+    let skills = body?.skills ?? body?.skill ?? body;
 
-    if (!projects) {
-      return jsonError("Missing project(s) in request body", 400);
+    if (!skills) {
+      return jsonError("Missing skill(s) in request body", 400);
     }
 
-    if (!Array.isArray(projects)) projects = [projects];
+    if (!Array.isArray(skills)) skills = [skills];
 
     const allowedCols = [
       "id",
       "title",
       "slug",
-      "client",
-      "description",
-      "image",
-      "tags",
-      "tag_icons",
-      "link",
-      "confidential",
+      "skill_group",
+      "items",
+      "icons",
       "display_order",
       "status",
-      "date",
       "created_at",
       "updated_at",
       "owner",
     ];
 
-    const prepared = projects.map((p: any) => {
+    const prepared = skills.map((s: any) => {
       const out: any = {};
-      out.status = p.status || "draft";
-      out.confidential = p.confidential ?? p.link === "#";
-      if (out.confidential && !p.link) out.link = "#";
+      out.status = s.status || "draft";
 
       for (const col of allowedCols) {
-        if (col === "status" || col === "confidential") continue;
+        if (col === "status") continue;
         if (col === "created_at") {
-          out.created_at = p.created_at ?? new Date().toISOString();
+          out.created_at = s.created_at ?? new Date().toISOString();
           continue;
         }
         if (col === "updated_at") {
           out.updated_at = new Date().toISOString();
           continue;
         }
-        if (p[col] !== undefined) out[col] = p[col];
+        if (s[col] !== undefined) out[col] = s[col];
       }
       return out;
     });
 
     const supabaseAdmin = await adminClient();
     const { data, error } = await supabaseAdmin
-      .from("projects")
+      .from("skills")
       .upsert(prepared, { onConflict: "slug" })
       .select();
     if (error) return jsonError(error.message, 500);
@@ -155,7 +148,7 @@ export async function PUT(req: Request) {
       }
 
       const { data, error } = await supabaseAdmin
-        .from("projects")
+        .from("skills")
         .update({
           status: newStatus,
           updated_at: new Date().toISOString(),
@@ -177,7 +170,7 @@ export async function PUT(req: Request) {
     };
 
     const { data, error } = await supabaseAdmin
-      .from("projects")
+      .from("skills")
       .update(normalizedUpdates)
       .eq("slug", slug)
       .select()
@@ -202,14 +195,14 @@ export async function DELETE(req: Request) {
 
     if (permanent) {
       const { error } = await supabaseAdmin
-        .from("projects")
+        .from("skills")
         .delete()
         .eq("slug", slug);
       if (error) return jsonError(error.message, 500);
       return jsonResponse({ ok: true }, 200);
     } else {
       const { data, error } = await supabaseAdmin
-        .from("projects")
+        .from("skills")
         .update({
           status: "archived",
           updated_at: new Date().toISOString(),

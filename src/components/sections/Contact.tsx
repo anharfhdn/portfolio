@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -9,8 +10,16 @@ import {
   Database,
   ShieldCheck,
 } from "lucide-react";
+import { getSiteSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 
 export default function Contact() {
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    (async () => {
+      setSettings(await getSiteSettings());
+    })();
+  }, []);
   return (
     <section
       id="contact"
@@ -36,17 +45,15 @@ export default function Contact() {
                 SOMETHING NEW.
               </span>
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              Always looking for challenges in{" "}
-              <strong>Industrial IoT architecture</strong> or collaborating on{" "}
-              <strong>Web3 protocols</strong>. Based in Indonesia, working
-              worldwide.
-            </p>
+            <p
+              className="text-muted-foreground text-lg leading-relaxed mb-8"
+              dangerouslySetInnerHTML={{ __html: settings.contact_intro }}
+            />
           </div>
 
           <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <motion.a
-              href="mailto:anharfahrudin21@gmail.com"
+              href={`mailto:${settings.contact_email}`}
               whileHover={{ y: -5 }}
               className="md:col-span-2 p-8 rounded-3xl bg-secondary/50 border border-border hover:border-emerald-500/50 transition-all group flex justify-between items-center"
             >
@@ -55,7 +62,7 @@ export default function Contact() {
                   Primary Contact
                 </p>
                 <h3 className="text-2xl font-bold group-hover:text-emerald-500 transition-colors">
-                  anharfahrudin21@gmail.com
+                  {settings.contact_email}
                 </h3>
               </div>
               <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center group-hover:rotate-45 transition-transform">
@@ -66,9 +73,9 @@ export default function Contact() {
             <div className="p-8 rounded-3xl bg-secondary/30 border border-border flex flex-col justify-between min-h-[160px]">
               <MapPin className="text-emerald-500 mb-4" size={24} />
               <div>
-                <h3 className="font-bold text-xl">Bogor, ID</h3>
+                <h3 className="font-bold text-xl">{settings.location_city}</h3>
                 <p className="text-sm text-muted-foreground uppercase tracking-tighter">
-                  Remote / Onsite
+                  {settings.location_mode}
                 </p>
               </div>
             </div>
@@ -82,7 +89,7 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-xl leading-tight">
-                  Web3 & Industrial IoT
+                  {settings.focus_title}
                 </h3>
               </div>
             </div>

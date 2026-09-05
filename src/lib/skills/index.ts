@@ -1,42 +1,36 @@
 import { supabase } from "@/lib/supabaseClient";
 
-export type SupabaseProject = {
+export type SupabaseSkill = {
   id?: string;
   title: string;
   slug: string;
-  client?: string;
-  description?: string;
-  image?: string;
-  tags?: string[];
-  tag_icons?: string[];
-  link?: string;
-  confidential?: boolean;
+  skill_group?: string;
+  items?: string[];
+  icons?: string[];
   display_order?: number;
   status?: "draft" | "published" | "archived";
-  date?: string;
   created_at?: string;
   updated_at?: string;
 };
 
-function normalize(row: any): SupabaseProject {
+function normalize(row: any): SupabaseSkill {
   return {
     ...row,
-    tags: Array.isArray(row.tags) ? row.tags : [],
-    tag_icons: Array.isArray(row.tag_icons) ? row.tag_icons : [],
-    confidential: row.confidential ?? row.link === "#",
-  } as SupabaseProject;
+    items: Array.isArray(row.items) ? row.items : [],
+    icons: Array.isArray(row.icons) ? row.icons : [],
+  } as SupabaseSkill;
 }
 
-export async function getAllProjects(): Promise<SupabaseProject[]> {
+export async function getAllSkills(): Promise<SupabaseSkill[]> {
   try {
-    const res = await fetch("/api/projects", {
+    const res = await fetch("/api/skills", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
 
     if (!res.ok) {
       console.error(
-        `Failed to fetch projects (GET /api/projects → ${res.status}):`,
+        `Failed to fetch skills (GET /api/skills → ${res.status}):`,
         await res.text(),
       );
       return [];
@@ -45,14 +39,14 @@ export async function getAllProjects(): Promise<SupabaseProject[]> {
     const data = await res.json();
     return ((data.data ?? []) as any[]).map(normalize);
   } catch (err) {
-    console.error("Error getting projects:", err);
+    console.error("Error getting skills:", err);
     return [];
   }
 }
 
-export async function getAllProjectsAdmin(): Promise<SupabaseProject[]> {
+export async function getAllSkillsAdmin(): Promise<SupabaseSkill[]> {
   try {
-    const res = await fetch(`/api/projects?admin=true`, {
+    const res = await fetch(`/api/skills?admin=true`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +59,7 @@ export async function getAllProjectsAdmin(): Promise<SupabaseProject[]> {
 
     if (!res.ok) {
       console.error(
-        `Failed to fetch admin projects (GET /api/projects → ${res.status}):`,
+        `Failed to fetch admin skills (GET /api/skills → ${res.status}):`,
         await res.text(),
       );
       return [];
@@ -74,15 +68,15 @@ export async function getAllProjectsAdmin(): Promise<SupabaseProject[]> {
     const data = await res.json();
     return ((data.data ?? []) as any[]).map(normalize);
   } catch (err) {
-    console.error("Error getting admin projects:", err);
+    console.error("Error getting admin skills:", err);
     return [];
   }
 }
 
-export async function getProjectsCountAdmin(): Promise<number> {
+export async function getSkillsCountAdmin(): Promise<number> {
   try {
     const { count, error } = await supabase
-      .from("projects")
+      .from("skills")
       .select("*", { count: "exact", head: true });
 
     if (error) {
@@ -92,23 +86,23 @@ export async function getProjectsCountAdmin(): Promise<number> {
 
     return count ?? 0;
   } catch (err) {
-    console.error("Error getting projects count from Supabase:", err);
+    console.error("Error getting skills count from Supabase:", err);
     return 0;
   }
 }
 
-export async function saveProject(
-  project: SupabaseProject,
-): Promise<SupabaseProject | null> {
+export async function saveSkill(
+  skill: SupabaseSkill,
+): Promise<SupabaseSkill | null> {
   try {
-    const res = await fetch("/api/projects", {
+    const res = await fetch("/api/skills", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projects: [project] }),
+      body: JSON.stringify({ skills: [skill] }),
     });
 
     if (!res.ok) {
-      console.error("Failed to save project via API:", await res.text());
+      console.error("Failed to save skill via API:", await res.text());
       return null;
     }
 
@@ -120,41 +114,41 @@ export async function saveProject(
     if (!out) return null;
     return normalize(out);
   } catch (err) {
-    console.error("Error saving project:", err);
+    console.error("Error saving skill:", err);
     return null;
   }
 }
 
-export async function deleteProject(
+export async function deleteSkill(
   slug: string,
   permanent: boolean = true,
 ): Promise<boolean> {
   try {
     const res = await fetch(
-      `/api/projects?slug=${encodeURIComponent(slug)}&permanent=${permanent}`,
+      `/api/skills?slug=${encodeURIComponent(slug)}&permanent=${permanent}`,
       {
         method: "DELETE",
       },
     );
     if (!res.ok) {
-      console.error("Failed to delete project via API:", await res.text());
+      console.error("Failed to delete skill via API:", await res.text());
       return false;
     }
     return true;
   } catch (err) {
-    console.error("Error deleting project:", err);
+    console.error("Error deleting skill:", err);
     return false;
   }
 }
 
-export type ProjectStatus = "draft" | "published" | "archived";
+export type SkillStatus = "draft" | "published" | "archived";
 
-export async function projectVisibility(
+export async function skillVisibility(
   slug: string,
-  status: ProjectStatus,
+  status: SkillStatus,
 ): Promise<boolean> {
   try {
-    const actionMap: Record<ProjectStatus, string> = {
+    const actionMap: Record<SkillStatus, string> = {
       draft: "draft",
       published: "publish",
       archived: "archive",
@@ -162,7 +156,7 @@ export async function projectVisibility(
 
     const action = actionMap[status] || status;
 
-    const res = await fetch("/api/projects", {
+    const res = await fetch("/api/skills", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -173,12 +167,12 @@ export async function projectVisibility(
 
     if (!res.ok) {
       const errorText = await res.text();
-      console.error(`Failed to set project to ${status}:`, errorText);
+      console.error(`Failed to set skill to ${status}:`, errorText);
       return false;
     }
     return true;
   } catch (err) {
-    console.error(`Error setting project to ${status}:`, err);
+    console.error(`Error setting skill to ${status}:`, err);
     return false;
   }
 }

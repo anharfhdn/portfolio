@@ -1,8 +1,19 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Mail, Instagram } from "lucide-react";
+import { Github, Linkedin, Mail, Instagram } from "lucide-react";
 import Image from "next/image";
+import { getSiteSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 
 export default function Footer() {
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    (async () => {
+      setSettings(await getSiteSettings());
+    })();
+  }, []);
   return (
     <footer className="bg-background border-t border-border py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,22 +31,22 @@ export default function Footer() {
               </div>
 
               <div className="h-12 w-48 relative">
-                <Image
-                  src="/logo-dark.png"
-                  alt="Anhar Fahrudin"
-                  fill
-                  sizes="192px"
-                  className="hidden dark:block object-contain object-left"
-                  priority
-                />
-                <Image
-                  src="/logo-light.png"
-                  alt="Anhar Fahrudin"
-                  fill
-                  sizes="192px"
-                  className="block dark:hidden object-contain object-left"
-                  priority
-                />
+              <Image
+                src="/logo-dark.png"
+                alt={settings.profile_name}
+                fill
+                sizes="192px"
+                className="hidden dark:block object-contain object-left"
+                priority
+              />
+              <Image
+                src="/logo-light.png"
+                alt={settings.profile_name}
+                fill
+                sizes="192px"
+                className="block dark:hidden object-contain object-left"
+                priority
+              />
               </div>
             </Link>
 
@@ -46,25 +57,25 @@ export default function Footer() {
 
           <div className="flex gap-6">
             <a
-              href="https://github.com/anharfhdn"
+              href={settings.social_github}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <Github size={20} />
             </a>
             <a
-              href="https://www.linkedin.com/in/anhar-fahrudin/"
+              href={settings.social_linkedin}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <Linkedin size={20} />
             </a>
             <a
-              href="mailto:anharfahrudin21@gmail.com"
+              href={`mailto:${settings.contact_email}`}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <Mail size={20} />
             </a>
             <a
-              href="https://www.instagram.com/anharfhdn"
+              href={settings.social_instagram}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <Instagram size={20} />
@@ -72,7 +83,8 @@ export default function Footer() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Anhar Fahrudin. All rights reserved.
+            © {new Date().getFullYear()} {settings.profile_name}. All rights
+            reserved.
           </p>
         </div>
       </div>

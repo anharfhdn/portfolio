@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
 import ClientProviders from "@/components/ClientProviders";
+import { workExperienceDuration } from "@/lib/utils";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -10,8 +11,7 @@ const instrumentSans = Instrument_Sans({
 
 export const metadata: Metadata = {
   title: "Anhar F | Full-Stack | Web3",
-  description:
-    "Engineering robust software at the intersection of Industrial Automation & Decentralized Protocols. 3+ years building reliable, scalable Web3 systems.",
+  description: `Engineering robust software at the intersection of Industrial Automation & Decentralized Protocols. ${workExperienceDuration()} building reliable, scalable Web3 systems.`,
   icons: {
     icon: "/favicon.png",
   },
