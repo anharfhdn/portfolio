@@ -1,7 +1,6 @@
 "use client";
 
-import { ThemeProvider } from "next-themes";
-import VisualEditsMessenger from "@/visual-edits/VisualEditsMessenger";
+import { ThemeProvider } from "@/components/theme-provider";
 import ErrorReporter from "@/components/ErrorReporter";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
@@ -12,10 +11,9 @@ export default function ClientProviders({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light">
+    <ThemeProvider>
       <Providers>
         {children}
-        <VisualEditsMessenger />
         <ErrorReporter />
         <Toaster />
       </Providers>

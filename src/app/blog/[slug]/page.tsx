@@ -84,7 +84,29 @@ export default function BlogPostPage({
     }
   }, [mounted, post]);
 
-  if (!mounted) return null;
+  if (!mounted)
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navbar />
+        <main className="flex-grow pt-32 pb-24 grid-bg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-pulse">
+            <div className="mb-12">
+              <div className="h-6 w-40 rounded-full bg-muted mb-2" />
+              <div className="h-14 w-3/4 rounded-lg bg-muted mb-8" />
+              <div className="h-6 w-1/2 rounded-lg bg-muted mb-8" />
+              <div className="h-12 rounded-lg bg-muted border-y border-border py-6" />
+            </div>
+            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden mb-12 border border-border bg-muted" />
+            <div className="space-y-4">
+              <div className="h-4 w-full rounded bg-muted" />
+              <div className="h-4 w-11/12 rounded bg-muted" />
+              <div className="h-4 w-4/5 rounded bg-muted" />
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   if (!post) notFound();
 
   const renderContent = () => {
@@ -155,6 +177,8 @@ export default function BlogPostPage({
                 src={post.image}
                 alt={post.alt || ""}
                 fill
+                unoptimized
+                sizes="(max-width: 1280px) 100vw, 1280px"
                 className="object-cover"
               />
             </div>

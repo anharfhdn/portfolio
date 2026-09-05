@@ -64,6 +64,7 @@ export default function Philosophy() {
                 src="/philosophy.png"
                 alt="AF Arrow Philosophy"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>

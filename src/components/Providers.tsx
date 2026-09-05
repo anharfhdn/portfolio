@@ -8,15 +8,14 @@ import {
   darkTheme,
   lightTheme,
 } from "@rainbow-me/rainbowkit";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme-provider";
 import { config } from "../../wallet.config";
-import { useState, useEffect } from "react";
-
-const queryClient = new QueryClient();
+import { useState, useEffect, useMemo } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
     const handle = requestAnimationFrame(() => {
@@ -25,17 +24,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return () => cancelAnimationFrame(handle);
   }, []);
 
-  const customLightTheme = lightTheme({
-    accentColor: "#10b981",
-    accentColorForeground: "white",
-    borderRadius: "medium",
-  });
+  const customLightTheme = useMemo(
+    () =>
+      lightTheme({
+        accentColor: "#10b981",
+        accentColorForeground: "white",
+        borderRadius: "medium",
+      }),
+    [],
+  );
 
-  const customDarkTheme = darkTheme({
-    accentColor: "#10b981",
-    accentColorForeground: "white",
-    borderRadius: "medium",
-  });
+  const customDarkTheme = useMemo(
+    () =>
+      darkTheme({
+        accentColor: "#10b981",
+        accentColorForeground: "white",
+        borderRadius: "medium",
+      }),
+    [],
+  );
 
   return (
     <WagmiProvider config={config}>

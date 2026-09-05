@@ -24,6 +24,7 @@ export default function Footer() {
                   src="/logo-dark.png"
                   alt="Anhar Fahrudin"
                   fill
+                  sizes="192px"
                   className="hidden dark:block object-contain object-left"
                   priority
                 />
@@ -31,6 +32,7 @@ export default function Footer() {
                   src="/logo-light.png"
                   alt="Anhar Fahrudin"
                   fill
+                  sizes="192px"
                   className="block dark:hidden object-contain object-left"
                   priority
                 />

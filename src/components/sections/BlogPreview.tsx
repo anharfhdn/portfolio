@@ -10,8 +10,10 @@ import { useEffect, useState } from "react";
 
 export default function BlogPreview() {
   const [posts, setPosts] = useState<any[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     (async () => {
       const allPosts = await getAllBlogPosts();
       const sortedPosts = allPosts.sort((a, b) => {
@@ -22,10 +24,6 @@ export default function BlogPreview() {
       setPosts(sortedPosts.slice(0, 3) as any[]);
     })();
   }, []);
-
-  if (typeof window === "undefined") {
-    return null;
-  }
 
   const featuredPosts = posts;
 
@@ -39,7 +37,7 @@ export default function BlogPreview() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -99,7 +97,7 @@ export default function BlogPreview() {
             featuredPosts.map((post, index) => (
               <motion.div
                 key={post.slug}
-                initial={{ opacity: 0, y: 20 }}
+                initial={mounted ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
@@ -114,6 +112,8 @@ export default function BlogPreview() {
                         src={post.image}
                         alt={post.title}
                         fill
+                        unoptimized
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (

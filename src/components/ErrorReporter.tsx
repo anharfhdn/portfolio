@@ -91,8 +91,7 @@ export default function ErrorReporter({ error, reset }: ReporterProps) {
   if (!error) return null;
 
   return (
-    <html>
-      <body className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-destructive">
@@ -125,7 +124,6 @@ export default function ErrorReporter({ error, reset }: ReporterProps) {
             )}
           </div>
         </div>
-      </body>
-    </html>
+    </div>
   );
 }

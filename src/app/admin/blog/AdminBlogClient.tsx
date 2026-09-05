@@ -402,10 +402,6 @@ export default function AdminBlogClient({
     }
   };
 
-  if (typeof window === "undefined") {
-    return null;
-  }
-
   if (!isConnected || !address) {
     return (
       <div className="min-h-screen bg-background flex flex-col">

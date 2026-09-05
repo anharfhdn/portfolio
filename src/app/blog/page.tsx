@@ -46,10 +46,6 @@ export default function BlogPage() {
     });
   }, [posts, searchTerm, selectedCategory]);
 
-  if (typeof window === "undefined") {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -146,6 +142,8 @@ export default function BlogPage() {
                           src={post.image}
                           alt={post.title}
                           fill
+                          unoptimized
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (

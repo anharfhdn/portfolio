@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme-provider";
 import { Moon, Sun, Menu, X, Wallet } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,6 +51,7 @@ export default function Navbar() {
                 src="/logo-dark.png"
                 alt="Anhar Fahrudin"
                 fill
+                sizes="192px"
                 className="hidden dark:block object-contain object-left"
                 priority
               />
@@ -58,6 +59,7 @@ export default function Navbar() {
                 src="/logo-light.png"
                 alt="Anhar Fahrudin"
                 fill
+                sizes="192px"
                 className="block dark:hidden object-contain object-left"
                 priority
               />

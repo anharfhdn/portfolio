@@ -25,7 +25,10 @@ export async function getAllBlogPosts(): Promise<SupabasePost[]> {
     });
 
     if (!res.ok) {
-      console.error("Failed to fetch posts:", await res.text());
+      console.error(
+        `Failed to fetch posts (GET /api/blog → ${res.status}):`,
+        await res.text(),
+      );
       return [];
     }
 
