@@ -86,9 +86,9 @@ export default function BlogPostPage({
 
   if (!mounted)
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-grow pt-32 pb-24 grid-bg">
+        <main className="flex-grow pt-32 pb-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-pulse">
             <div className="mb-12">
               <div className="h-6 w-40 rounded-full bg-muted mb-2" />
@@ -131,9 +131,9 @@ export default function BlogPostPage({
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-32 pb-24 grid-bg">
+      <main className="flex-grow pt-32 pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/blog"
@@ -144,15 +144,15 @@ export default function BlogPostPage({
 
           <article>
             <div className="mb-12">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="inline-block px-3 py-1 text-xs font-medium bg-muted rounded-full">
                   {post.category || "Uncategorized"}
                 </span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
+              <h1 className="md:text-7xl font-medium tracking-tight mb-6 leading-[1.05]">
                 {post.title}
               </h1>
-              <h2 className="text-xl md:text-2xl italic tracking-tight mb-8">
+              <h2 className="text-xl md:text-2xl text-muted-foreground tracking-tight mb-8 leading-relaxed">
                 {post.excerpt}
               </h2>
 
@@ -172,7 +172,7 @@ export default function BlogPostPage({
               </div>
             </div>
 
-            <div className="relative aspect-[4/3] rounded-3xl overflow-hidden mb-12 border border-border shadow-xl">
+            <div className="relative aspect-[16/9] rounded-3xl overflow-hidden mb-12">
               <Image
                 src={post.image}
                 alt={post.alt || ""}
@@ -185,8 +185,8 @@ export default function BlogPostPage({
 
             <div
               ref={contentRef}
-              className="prose prose-lg md:prose-xl dark:prose-invert max-w-none
-                prose-headings:font-bold prose-headings:tracking-tight
+              className="prose prose-lg md:prose-xl dark:prose-invert max-w-3xl
+                prose-headings:font-medium prose-headings:tracking-tight
                 prose-p:text-stone-700 dark:prose-p:text-stone-300 prose-p:leading-relaxed"
               dangerouslySetInnerHTML={{ __html: renderContent() }}
             />

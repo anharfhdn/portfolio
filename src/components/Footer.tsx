@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Github, Linkedin, Mail, Instagram } from "lucide-react";
-import Image from "next/image";
 import { getSiteSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 
 export default function Footer() {
@@ -15,78 +12,15 @@ export default function Footer() {
     })();
   }, []);
   return (
-    <footer className="bg-background border-t border-border py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-          <div>
-            <Link href="/" className="flex items-center gap-3 shrink-0 group">
-              <div className="relative h-10 w-10 overflow-hidden border-emerald-500/20 bg-emerald-500/5 p-1">
-                <Image
-                  src="/favicon.png"
-                  alt="Logo Icon"
-                  width={40}
-                  height={40}
-                  className="object-contain transition-transform duration-300 group-hover:rotate-12"
-                />
-              </div>
+    <footer className="border-t border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-sm text-muted-foreground">
+          © {new Date().getFullYear()} {settings.profile_name}. All rights reserved.
+        </p>
 
-              <div className="h-12 w-48 relative">
-              <Image
-                src="/logo-dark.png"
-                alt={settings.profile_name}
-                fill
-                sizes="192px"
-                className="hidden dark:block object-contain object-left"
-                priority
-              />
-              <Image
-                src="/logo-light.png"
-                alt={settings.profile_name}
-                fill
-                sizes="192px"
-                className="block dark:hidden object-contain object-left"
-                priority
-              />
-              </div>
-            </Link>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              Built with Next.js & Tailwind CSS
-            </p>
-          </div>
-
-          <div className="flex gap-6">
-            <a
-              href={settings.social_github}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Github size={20} />
-            </a>
-            <a
-              href={settings.social_linkedin}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Linkedin size={20} />
-            </a>
-            <a
-              href={`mailto:${settings.contact_email}`}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Mail size={20} />
-            </a>
-            <a
-              href={settings.social_instagram}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Instagram size={20} />
-            </a>
-          </div>
-
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} {settings.profile_name}. All rights
-            reserved.
-          </p>
-        </div>
+        <p className="text-sm text-muted-foreground">
+          Built with Next.js & Tailwind CSS
+        </p>
       </div>
     </footer>
   );

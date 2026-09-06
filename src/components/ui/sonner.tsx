@@ -12,11 +12,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       style={
         {
-          "--normal-bg": "var(--popover)",
+          "--normal-bg": "color-mix(in srgb, var(--popover) 65%, transparent)",
           "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
+          "--normal-border": "color-mix(in srgb, var(--border) 60%, transparent)",
         } as React.CSSProperties
       }
+      toastOptions={{
+        className: "backdrop-blur-xl shadow-lg rounded-2xl",
+      }}
       {...props}
     />
   );

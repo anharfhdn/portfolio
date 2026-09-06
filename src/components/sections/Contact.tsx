@@ -6,9 +6,9 @@ import {
   Mail,
   MapPin,
   ArrowUpRight,
-  Globe,
-  Database,
-  ShieldCheck,
+  Github,
+  Linkedin,
+  Instagram,
 } from "lucide-react";
 import { getSiteSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 
@@ -20,80 +20,115 @@ export default function Contact() {
       setSettings(await getSiteSettings());
     })();
   }, []);
-  return (
-    <section
-      id="contact"
-      className="py-24 relative grid-bg bg-emerald-50/30 dark:bg-emerald-950/10"
-    >
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] -z-10" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row gap-16 items-start">
-          <div className="lg:w-1/3">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-emerald-600 font-mono text-[10px] tracking-[0.3em] uppercase">
-                Contact
-              </span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              LET'S BUILD <br />
-              <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">
-                SOMETHING NEW.
-              </span>
+  const rows = [
+    {
+      label: "Email",
+      value: settings.contact_email,
+      href: `mailto:${settings.contact_email}`,
+      Icon: Mail,
+      external: false,
+    },
+    {
+      label: "GitHub",
+      value: "github",
+      href: settings.social_github,
+      Icon: Github,
+      external: true,
+    },
+    {
+      label: "LinkedIn",
+      value: "linkedin",
+      href: settings.social_linkedin,
+      Icon: Linkedin,
+      external: true,
+    },
+    {
+      label: "Instagram",
+      value: "instagram",
+      href: settings.social_instagram,
+      Icon: Instagram,
+      external: true,
+    },
+  ];
+
+  return (
+    <section id="contact" className="py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-16">
+        <div className="lg:sticky lg:top-28 self-start">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+              Contact
+            </p>
+            <h2 className="md:text-7xl font-medium tracking-tight leading-[1.05] mb-6">
+              Let&apos;s Build Something NEW.
             </h2>
             <p
               className="text-muted-foreground text-lg leading-relaxed mb-8"
               dangerouslySetInnerHTML={{ __html: settings.contact_intro }}
             />
-          </div>
-
-          <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-            <motion.a
-              href={`mailto:${settings.contact_email}`}
-              whileHover={{ y: -5 }}
-              className="md:col-span-2 p-8 rounded-3xl bg-secondary/50 border border-border hover:border-emerald-500/50 transition-all group flex justify-between items-center"
-            >
-              <div>
-                <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2">
-                  Primary Contact
-                </p>
-                <h3 className="text-2xl font-bold group-hover:text-emerald-500 transition-colors">
-                  {settings.contact_email}
-                </h3>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center group-hover:rotate-45 transition-transform">
-                <ArrowUpRight className="text-emerald-500" />
-              </div>
-            </motion.a>
-
-            <div className="p-8 rounded-3xl bg-secondary/30 border border-border flex flex-col justify-between min-h-[160px]">
-              <MapPin className="text-emerald-500 mb-4" size={24} />
-              <div>
-                <h3 className="font-bold text-xl">{settings.location_city}</h3>
-                <p className="text-sm text-muted-foreground uppercase tracking-tighter">
-                  {settings.location_mode}
-                </p>
-              </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-7 py-3.5 text-sm font-medium">
+              <MapPin size={16} />
+              {settings.location_city} • {settings.location_mode}
             </div>
+          </motion.div>
+        </div>
 
-            <div className="p-8 rounded-3xl bg-emerald-500 text-white flex flex-col justify-between min-h-[160px]">
-              <div className="flex justify-between items-start">
-                <Database size={24} />
-                <span className="text-[10px] font-mono border border-white/30 px-2 py-1 rounded-full uppercase">
-                  Current Focus
-                </span>
-              </div>
-              <div>
-                <h3 className="font-bold text-xl leading-tight">
-                  {settings.focus_title}
-                </h3>
-              </div>
-            </div>
-          </div>
+        <div>
+          {rows.map((row, index) => {
+            const inner = (
+              <>
+                <div className="flex items-center gap-4">
+                  <span className="p-2.5 rounded-xl text-foreground shrink-0">
+                    <row.Icon size={18} />
+                  </span>
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                      {row.label}
+                    </p>
+                    <p className="font-medium">{row.href.replace(/^(https?:\/\/|mailto:)/, '')}</p>
+                  </div>
+                </div>
+                {row.href && (
+                  <span className="p-2 rounded-full group-hover:bg-foreground group-hover:text-background group-hover:border-foreground transition-all shrink-0">
+                    <ArrowUpRight size={16} />
+                  </span>
+                )}
+              </>
+            );
+
+            const classes =
+              "group flex items-center justify-between gap-4 py-6 transition-colors " +
+              (row.href ? "hover:bg-muted/40 px-2 -mx-2 rounded-xl" : "px-2 -mx-2");
+
+            return (
+              <motion.div
+                key={row.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+              >
+                {row.href ? (
+                  <a
+                    href={row.href}
+                    target={row.external ? "_blank" : undefined}
+                    rel={row.external ? "noopener noreferrer" : undefined}
+                    className={classes}
+                  >
+                    {inner}
+                  </a>
+                ) : (
+                  <div className={classes}>{inner}</div>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

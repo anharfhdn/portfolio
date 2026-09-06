@@ -47,20 +47,22 @@ export default function BlogPage() {
   }, [posts, searchTerm, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <main className="flex-grow pt-32 pb-24 grid-bg">
+      <main className="flex-grow pt-32 pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+          <div className="mb-12">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
               Blog
+            </p>
+            <h1 className="md:text-7xl font-medium tracking-tight mb-4 leading-[1.05]">
+              Thoughts & Notes
             </h1>
             <p className="text-lg text-muted-foreground">
-              Thoughts on life, programming, work, design, technology, books,
-              etc.
+              Thoughts on life, programming, work, design, technology, books, etc.
             </p>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-muted-foreground">
               {posts.length > 0 &&
                 `${posts.length} article${posts.length !== 1 ? "s" : ""} available.`}
             </p>
@@ -74,7 +76,7 @@ export default function BlogPage() {
               />
               <Input
                 placeholder="Search articles by title, content, author, or category..."
-                className="pl-10"
+                className="pl-10 rounded-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -91,9 +93,9 @@ export default function BlogPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedCategory(null)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === null
-                    ? "bg-emerald-500 text-white"
+                    ? "bg-foreground text-background"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
@@ -107,9 +109,9 @@ export default function BlogPage() {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       selectedCategory === category
-                        ? "bg-emerald-500 text-white"
+                        ? "bg-foreground text-background"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
@@ -129,14 +131,14 @@ export default function BlogPage() {
                   "
                 </div>
               )}
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredPosts.map((post) => (
                   <Link
                     key={post.slug}
                     href={`/blog/${post.slug}`}
-                    className="group rounded-lg border border-border bg-card hover:border-emerald-500/50 overflow-hidden transition-all duration-300 flex flex-col h-full hover:shadow-lg hover:shadow-emerald-500/10"
+                    className="group rounded-3xl bg-card bg-muted/50 overflow-hidden transition-all duration-300 flex flex-col h-full hover:shadow-lg"
                   >
-                    <div className="relative h-48 w-full overflow-hidden bg-muted">
+                    <div className="relative h-56 w-full">
                       {post.image ? (
                         <Image
                           src={post.image}
@@ -147,8 +149,8 @@ export default function BlogPage() {
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 flex items-center justify-center">
-                          <span className="text-emerald-600 font-mono text-sm">
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <span className="text-muted-foreground text-sm">
                             No Image
                           </span>
                         </div>
@@ -156,13 +158,7 @@ export default function BlogPage() {
                     </div>
 
                     <div className="flex flex-col flex-grow p-6">
-                      <div className="mb-3">
-                        <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full">
-                          {post.category || "Uncategorized"}
-                        </span>
-                      </div>
-
-                      <h3 className="text-xl font-bold tracking-tight mb-3 line-clamp-2 group-hover:text-emerald-500 transition-colors">
+                      <h3 className="text-xl font-medium tracking-tight mb-3 line-clamp-2">
                         {post.title}
                       </h3>
 
@@ -170,14 +166,19 @@ export default function BlogPage() {
                         {post.excerpt}
                       </p>
 
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground border-t border-border pt-4">
-                        <div className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          {post.date || "No date"}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock size={14} />
-                          {post.readTime || "5 min read"}
+                      <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-4">
+                        <div className="flex items-center gap-4">
+                          <span className="inline-block px-3 py-1 rounded-full text-xs text-muted-foreground bg-muted/60 font-medium w-fit">
+                            {post.category || "Uncategorized"}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            {post.date || "No date"}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock size={14} />
+                            {post.readTime || "5 min read"}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -201,7 +202,7 @@ export default function BlogPage() {
                   setSearchTerm("");
                   setSelectedCategory(null);
                 }}
-                className="text-emerald-500 hover:text-emerald-600 font-medium transition-colors"
+                className="text-foreground underline underline-offset-4 font-medium transition-colors"
               >
                 Clear filters
               </button>

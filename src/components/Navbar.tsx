@@ -34,11 +34,11 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-100 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed top-4 left-0 right-0 z-50 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto rounded-2xl bg-background/50 backdrop-blur-xl border border-border/60 shadow-lg shadow-black/[0.04] dark:shadow-black/30 px-4 sm:px-6">
         <div className="flex justify-between h-16 items-center">
           <Link href="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative h-10 w-10 overflow-hidden border-emerald-500/20 bg-emerald-500/5 p-1">
+            <div className="relative h-10 w-10 overflow-hidden p-1">
               <Image
                 src="/favicon.png"
                 alt="Logo Icon"
@@ -67,21 +67,21 @@ export default function Navbar() {
             </div>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-emerald-500 transition-all flex items-center gap-1 group"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {link.name}
-                <span className="w-1 h-3 bg-emerald-500 hidden group-hover:inline-block animate-pulse ml-1" />
               </Link>
             ))}
 
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground"
+              aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -115,7 +115,7 @@ export default function Navbar() {
                           <Button
                             onClick={openConnectModal}
                             size="sm"
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-lg shadow-emerald-500/20"
+                            className="bg-foreground text-background hover:bg-foreground/90 gap-2 font-medium"
                           >
                             <Wallet size={16} />
                             Connect
@@ -128,7 +128,7 @@ export default function Navbar() {
                             onClick={openChainModal}
                             variant="destructive"
                             size="sm"
-                            className="border-2"
+                            className="rounded-full"
                           >
                             Wrong Network
                           </Button>
@@ -140,7 +140,7 @@ export default function Navbar() {
                             onClick={openChainModal}
                             variant="outline"
                             size="sm"
-                            className="px-2 border-emerald-500/40 dark:border-emerald-500/40 hover:border-emerald-500 transition-all"
+                            className="px-2 rounded-full"
                           >
                             {chain.hasIcon && (
                               <div className="w-5 h-5">
@@ -159,7 +159,7 @@ export default function Navbar() {
                             onClick={openAccountModal}
                             variant="outline"
                             size="sm"
-                            className="font-mono text-xs border-emerald-500/40 dark:border-emerald-500/40 hover:border-emerald-500 transition-all duration-300"
+                            className="font-mono text-xs rounded-full"
                           >
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -178,6 +178,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center gap-4">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -204,9 +205,9 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b border-border overflow-hidden"
+            className="md:hidden overflow-hidden"
           >
-            <div className="px-4 pt-2 pb-6 space-y-1">
+            <div className="max-w-5xl mx-auto mt-2 rounded-2xl bg-background/70 backdrop-blur-xl border border-border/60 shadow-lg shadow-black/[0.04] dark:shadow-black/30 px-4 pt-2 pb-6 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}

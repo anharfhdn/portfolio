@@ -60,14 +60,14 @@ export default function ResumeButton({ className = "" }: ResumeButtonProps) {
       rel="noopener noreferrer"
       onClick={handleClick}
       aria-disabled={checking}
-      className={`group flex items-center gap-2 bg-gradient-to-r from-emerald-400/90 via-emerald-500/80 to-green-500/80 hover:from-emerald-500 hover:via-emerald-600 hover:to-green-600 text-background px-8 py-4 rounded-full font-medium transition-all hover:scale-105 hover:shadow-emerald-500/30 ${className}`}
+      className={`group inline-flex items-center gap-2 rounded-full bg-muted/50 px-7 py-3.5 text-sm font-medium hover:bg-muted transition-colors ${className}`}
     >
       {checking ? (
-        <Loader2 className="animate-spin" size={18} />
+        <Loader2 className="animate-spin" size={16} />
       ) : (
         <Download
-          className="group-hover:translate-x-1 transition-transform"
-          size={18}
+          className="group-hover:translate-y-0.5 transition-transform"
+          size={16}
         />
       )}
       View Resume

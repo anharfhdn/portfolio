@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Host_Grotesk } from "next/font/google";
 import ClientProviders from "@/components/ClientProviders";
 import { workExperienceDuration } from "@/lib/utils";
 import "./globals.css";
 
-const instrumentSans = Instrument_Sans({
+const hostGrotesk = Host_Grotesk({
   subsets: ["latin"],
-  variable: "--font-instrument-sans",
+  variable: "--font-host-grotesk",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${instrumentSans.variable} font-sans antialiased`}>
+      <body className={`${hostGrotesk.variable} font-sans antialiased`}>
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

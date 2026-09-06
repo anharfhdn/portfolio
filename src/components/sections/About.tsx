@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { workExperienceDuration } from "@/lib/utils";
 import { getAllSkills } from "@/lib/skills";
 import { getSiteSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 import { TechIcon } from "@/components/tech-icons";
@@ -48,52 +47,39 @@ export default function About() {
   }, []);
 
   return (
-    <section
-      id="about"
-      className="py-24 relative grid-bg bg-emerald-50/30 dark:bg-emerald-950/10"
-    >
+    <section id="about" className="py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-16">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-emerald-600 font-mono text-[10px] tracking-[0.3em] uppercase">
-                About
-              </span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+              About
+            </p>
+            <h2 className="md:text-7xl font-medium tracking-tight mb-8 leading-[1.05]">
               {settings.about_title_line1} <br />
-              <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">
-                {settings.about_title_line2}
-              </span>
+              {settings.about_title_line2}
             </h2>
 
             <div
               className="space-y-4 text-lg text-muted-foreground leading-relaxed mb-10 [&>p]:mb-4"
               dangerouslySetInnerHTML={{
-                __html: settings.about_bio.replaceAll(
-                  "{{years}}",
-                  workExperienceDuration(settings.career_start),
-                ),
+                __html: settings.about_bio
               }}
             />
 
           </motion.div>
 
-          <div className="space-y-10">
+          <div className="space-y-12">
             {!loaded ? (
               <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 animate-pulse">
                 {Array.from({ length: 12 }).map((_, i) => (
                   <div
                     key={`skeleton-${i}`}
-                    className="h-[76px] rounded-xl bg-muted"
+                    className="h-[76px] rounded-2xl bg-muted"
                   />
                 ))}
               </div>
@@ -108,17 +94,17 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <h4 className="text-xs font-mono uppercase tracking-[0.2em] text-emerald-600 mb-4">
+                  <h4 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
                     {skill.title}
                   </h4>
                   <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-3">
                     {skill.items.map((item, i) => (
                       <div
                         key={item}
-                        className="group flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gradient-to-br from-secondary/20 to-transparent border border-border hover:border-emerald-500/40 transition-all"
+                        className="group flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-muted/50 hover:border-emerald-500/40 transition-all"
                       >
-                        <span className="text-emerald-500 group-hover:scale-110 transition-transform">
-                          <TechIcon icon={skill.icons?.[i]} size={28} />
+                        <span className="group-hover:scale-110 transition-transform">
+                          <TechIcon icon={skill.icons?.[i]} size={22} />
                         </span>
                         <span className="text-[11px] font-medium text-center text-muted-foreground group-hover:text-foreground transition-colors">
                           {item}

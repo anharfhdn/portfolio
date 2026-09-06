@@ -58,43 +58,18 @@ export default function Projects() {
   };
 
   return (
-    <section
-      id="projects"
-      className="py-32 relative grid-bg bg-emerald-50/30 dark:bg-emerald-950/10"
-    >
+    <section id="projects" className="py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-emerald-600 font-mono text-[10px] tracking-[0.3em] uppercase">
-                Projects
-              </span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-              SELECTED <br />
-              <span className="text-emerald-500 italic font-light text-5xl md:text-6xl">
-                PROJECTS
-              </span>
-            </h2>
-          </div>
-
-          <div className="hidden lg:flex flex-1 mx-12 mb-4 self-end">
-            <div className="relative h-[1px] w-full bg-emerald-500/10">
-              <div className="absolute top-0 left-0 h-full w-2/3 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent animate-pulse" />
-            </div>
-          </div>
-
-          <div className="relative">
-            <p className="text-muted-foreground text-xs md:text-sm font-medium max-w-[260px] leading-relaxed border-l-2 border-emerald-500/20 pl-4 py-1">
-              A documented history of{" "}
-              <span className="text-foreground">production-grade</span> software
-              across Industrial IoT and Web3 ecosystems.
-            </p>
-          </div>
+        <div className="mb-16">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-4">
+            Projects
+          </p>
+          <h2 className="md:text-7xl font-medium tracking-tight mb-6 leading-[1.05]">
+            Selected Work
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            A documented history of production-grade software across Industrial IoT and Web3 ecosystems.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -102,10 +77,10 @@ export default function Projects() {
             Array.from({ length: SKELETON_COUNT }).map((_, i) => (
               <div
                 key={`skeleton-${i}`}
-                className="flex flex-col bg-background/60 border border-emerald-500/20 rounded-2xl overflow-hidden animate-pulse"
+                className="flex flex-col bg-card border border-border rounded-3xl overflow-hidden animate-pulse"
               >
                 <div className="aspect-[16/9] bg-muted" />
-                <div className="p-7 space-y-4">
+                <div className="p-6 space-y-4">
                   <div className="h-4 w-2/3 rounded bg-muted" />
                   <div className="h-6 w-full rounded bg-muted" />
                   <div className="h-4 w-full rounded bg-muted" />
@@ -125,10 +100,7 @@ export default function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="group flex flex-col bg-background/60 backdrop-blur-md
-                                     border border-emerald-500/20 rounded-2xl overflow-hidden
-                                     hover:border-emerald-500/60 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]
-                                     transition-all duration-500 relative"
+              className="group flex flex-col bg-muted/50 rounded-3xl overflow-hidden hover:border-emerald-500/60 hover:shadow-lg transition-all duration-300 relative"
             >
               <div className="relative aspect-[16/9] overflow-hidden bg-muted">
                 {project.image ? (
@@ -138,25 +110,25 @@ export default function Projects() {
                     fill
                     unoptimized
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105 group-hover:rotate-1"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 flex items-center justify-center">
-                    <span className="text-emerald-600 font-mono text-sm">
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <span className="text-muted-foreground text-sm">
                       No Image
                     </span>
                   </div>
                 )}
               </div>
 
-              <div className="p-7 flex flex-col flex-1">
+              <div className="p-6 flex flex-col flex-1">
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag, i) =>
                     project.tag_icons[i] ? (
                       <span
                         key={`${tag}-${i}`}
                         title={tag}
-                        className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 p-1.5 rounded border border-emerald-500/10"
+                        className="text-foreground p-1.5 rounded-lg"
                       >
                         <TechIcon icon={project.tag_icons[i]} size={16} />
                       </span>
@@ -164,24 +136,21 @@ export default function Projects() {
                   )}
                 </div>
 
-                <h3 className="text-2xl font-bold mb-1 group-hover:text-emerald-500 transition-colors">
+                <h3 className="text-xl font-medium mb-1">
                   {project.title}
                 </h3>
-                <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-4">
-                  For:{" "}
-                  <span className="text-foreground font-bold">
-                    {project.client}
-                  </span>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-4">
+                  {project.client}
                 </p>
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-8 flex-1 leading-relaxed">
                   {project.description}
                 </p>
 
-                <div className="flex items-center justify-between pt-5 border-t border-emerald-500/10">
+                <div className="flex items-center justify-between pt-5 border-t border-border">
                   {project.github === "#" ? (
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground/60">
-                      <Lock size={12} className="text-emerald-500/40" />
-                      <span className="uppercase tracking-tighter">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Lock size={12} />
+                      <span className="uppercase tracking-widest">
                         Enterprise Protected
                       </span>
                     </div>
@@ -190,7 +159,7 @@ export default function Projects() {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-[10px] font-mono font-bold hover:text-emerald-500 transition-colors uppercase tracking-tighter"
+                      className="flex items-center gap-2 text-xs font-medium hover:text-muted-foreground transition-colors uppercase tracking-widest"
                     >
                       <Github size={14} /> Source Code
                     </a>
@@ -198,7 +167,8 @@ export default function Projects() {
 
                   <button
                     onClick={() => handleProjectClick(project)}
-                    className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+                    className="p-2 rounded-full group-hover:bg-foreground group-hover:text-background group-hover:border-foreground transition-all shrink-0"
+                    aria-label={`Open ${project.title}`}
                   >
                     <ArrowUpRight size={16} />
                   </button>
