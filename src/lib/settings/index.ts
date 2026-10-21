@@ -23,7 +23,7 @@ export type SiteSettings = {
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   profile_name: "Anhar Fahrudin",
-  meta_title: "Anhar F | Full-Stack | Web3",
+  meta_title: "Anhar F | Software Engineer | AI Engineer",
   meta_description:
     "Engineering robust software at the intersection of Industrial Automation & Decentralized Protocols. Building reliable, scalable Web3 systems.",
   availability_badge:

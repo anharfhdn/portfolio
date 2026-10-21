@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Host_Grotesk } from "next/font/google";
 import ClientProviders from "@/components/ClientProviders";
-import { workExperienceDuration } from "@/lib/utils";
+import { getSiteSettings } from "@/lib/settings";
 import "./globals.css";
 
 const hostGrotesk = Host_Grotesk({
@@ -10,9 +10,11 @@ const hostGrotesk = Host_Grotesk({
   weight: ["400", "500", "600", "700"],
 });
 
+const settings = await getSiteSettings();
+
 export const metadata: Metadata = {
-  title: "Anhar F | Full-Stack | Web3",
-  description: `Engineering robust software at the intersection of Industrial Automation & Decentralized Protocols. ${workExperienceDuration()} building reliable, scalable Web3 systems.`,
+  title: settings.meta_title,
+  description: settings.meta_description,
   icons: {
     icon: "/favicon.png",
   },

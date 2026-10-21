@@ -67,9 +67,6 @@ export default function Projects() {
           <h2 className="md:text-7xl font-medium tracking-tight mb-6 leading-[1.05]">
             Selected Work
           </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            A documented history of production-grade software across Industrial IoT and Web3 ecosystems.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
